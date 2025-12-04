@@ -25,6 +25,7 @@ import {
   Menu,
   MenuItem,
   LinearProgress,
+  Snackbar,
 } from '@mui/material';
 import {
   Videocam as VideocamIcon,
@@ -43,6 +44,7 @@ import {
   FiberManualRecord as RecordingIcon,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
+import { MotionNotificationService } from '../../services/motionNotificationService';
 
 interface Camera {
   id: string;
@@ -85,6 +87,18 @@ const SecurityCamera: React.FC = () => {
   const [fullscreenCamera, setFullscreenCamera] = useState<Camera | null>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedCamera, setSelectedCamera] = useState<Camera | null>(null);
+  const [motionAlert, setMotionAlert] = useState<{
+    open: boolean;
+    message: string;
+    camera: string;
+  }>({
+    open: false,
+    message: '',
+    camera: '',
+  });
+
+  // Initialize motion service
+  const motionService = new MotionNotificationService();
   
   const [cameras] = useState<Camera[]>([
     {
@@ -204,6 +218,32 @@ const SecurityCamera: React.FC = () => {
     setSelectedCamera(null);
   };
 
+  const simulateMotionDetection = async (camera: Camera) => {
+    try {
+      const success = await motionService.sendMotionAlert(camera.id, camera.location);
+      if (success) {
+        setMotionAlert({
+          open: true,
+          message: `Motion detected`,
+          camera: camera.name,
+        });
+        console.log('🚨 MOTION DETECTED:', {
+          cameraId: camera.id,
+          cameraName: camera.name,
+          location: camera.location,
+          timestamp: new Date().toISOString(),
+          message: `Motion detected by ${camera.name} at ${camera.location}`
+        });
+      }
+    } catch (error) {
+      console.error('Motion detection failed:', error);
+    }
+  };
+
+  const handleCloseMotionAlert = () => {
+    setMotionAlert({ open: false, message: '', camera: '' });
+  };
+
   const CameraCard = ({ camera }: { camera: Camera }) => (
     <motion.div variants={animationVariants.fadeIn}>
       <Card sx={{ height: '100%', position: 'relative' }}>
@@ -304,6 +344,19 @@ const SecurityCamera: React.FC = () => {
               </Typography>
             </Box>
           )}
+
+          <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+            <Button
+              size="small"
+              variant="outlined"
+              color="warning"
+              onClick={() => simulateMotionDetection(camera)}
+              startIcon={<AlertIcon />}
+              disabled={camera.status === 'offline'}
+            >
+              Test Motion
+            </Button>
+          </Box>
         </CardContent>
       </Card>
     </motion.div>
@@ -568,6 +621,23 @@ const SecurityCamera: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Motion Detection Alert */}
+      <Snackbar
+        open={motionAlert.open}
+        autoHideDuration={8000}
+        onClose={handleCloseMotionAlert}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseMotionAlert} 
+          severity="error" 
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          🚨 {motionAlert.message} - {motionAlert.camera}
+        </Alert>
+      </Snackbar>
     </motion.div>
   );
 };

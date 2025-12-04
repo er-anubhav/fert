@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Grid,
@@ -21,6 +21,8 @@ import {
   ListItemText,
   ListItemAvatar,
   Divider,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -43,12 +45,25 @@ import AlertsPanel from '../../components/Dashboard/AlertsPanel';
 import WeatherWidget from '../../components/Dashboard/WeatherWidget';
 import ConnectivityStatus from '../../components/Dashboard/ConnectivityStatus';
 import { animationVariants } from '../../utils/theme';
+import { MotionNotificationService } from '../../services/motionNotificationService';
 
 const Dashboard: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const [notificationDialog, setNotificationDialog] = useState(false);
+  const [motionNotification, setMotionNotification] = useState<{
+    open: boolean;
+    message: string;
+    timestamp: Date | null;
+  }>({
+    open: false,
+    message: '',
+    timestamp: null,
+  });
   
+  // Initialize motion service
+  const motionService = new MotionNotificationService();
+
   const handleNavigation = (path: string) => {
     try {
       navigate(path);
@@ -59,9 +74,41 @@ const Dashboard: React.FC = () => {
     }
   };
 
+  // Function to simulate motion detection (for testing)
+  const testMotionDetection = async () => {
+    try {
+      const success = await motionService.sendMotionAlert('dashboard-test', 'manual-trigger');
+      if (success) {
+        const now = new Date();
+        setMotionNotification({
+          open: true,
+          message: `Motion detected from dashboard test at ${now.toLocaleTimeString()}`,
+          timestamp: now,
+        });
+        console.log('🚨 MOTION DETECTED:', {
+          source: 'dashboard-test',
+          location: 'manual-trigger',
+          timestamp: now.toISOString(),
+          message: `Motion alert sent successfully at ${now.toLocaleString()}`
+        });
+      }
+    } catch (error) {
+      console.error('Motion detection test failed:', error);
+    }
+  };
+
+  // Motion notifications will now only come from:
+  // 1. Manual "Test Motion" button clicks
+  // 2. External API calls to https://fertobot.vercel.app/api/motion
+
+  const handleCloseMotionNotification = () => {
+    setMotionNotification(prev => ({ ...prev, open: false }));
+  };
+
   const quickActions = [
     { label: 'Start Irrigation', icon: WaterIcon, color: 'primary' as const, action: () => handleNavigation('/irrigation') },
     { label: 'View Cameras', icon: SecurityIcon, color: 'secondary' as const, action: () => handleNavigation('/security') },
+    { label: 'Test Motion', icon: NotificationsIcon, color: 'warning' as const, action: testMotionDetection },
     { label: 'Check Probes', icon: SensorsIcon, color: 'success' as const, action: () => handleNavigation('/probes') },
     { label: 'Bluetooth Setup', icon: BluetoothIcon, color: 'info' as const, action: () => handleNavigation('/bluetooth') },
   ];
@@ -198,6 +245,39 @@ const Dashboard: React.FC = () => {
           <AlertsPanel />
         </motion.div>
       </Box>
+      
+      {/* Motion Detection Notification */}
+      <Snackbar
+        open={motionNotification.open}
+        autoHideDuration={6000}
+        onClose={handleCloseMotionNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        sx={{ bottom: { xs: 80, sm: 80 } }}
+      >
+        <Alert 
+          onClose={handleCloseMotionNotification} 
+          severity="warning" 
+          variant="filled"
+          sx={{ 
+            width: '100%',
+            backgroundColor: '#fff3cd',
+            color: '#856404',
+            '& .MuiAlert-icon': {
+              color: '#856404'
+            },
+            '& .MuiAlert-action': {
+              color: '#856404'
+            }
+          }}
+        >
+          🚨 {motionNotification.message}
+          {motionNotification.timestamp && (
+            <Typography variant="caption" display="block" sx={{ mt: 0.5, opacity: 0.9 }}>
+              {motionNotification.timestamp.toLocaleString()}
+            </Typography>
+          )}
+        </Alert>
+      </Snackbar>
       
       {/* Notification Dialog */}
       <Dialog 

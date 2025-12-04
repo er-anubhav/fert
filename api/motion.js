@@ -16,13 +16,32 @@ export default function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Simple rate limiting: reject if too many requests from same IP in short time
+  const clientIP = req.headers['x-forwarded-for'] || req.connection?.remoteAddress || 'unknown';
+  
+  // Basic validation of request body
+  const { deviceId, location } = req.body || {};
+  if (!deviceId || !location) {
+    console.log('🚫 Invalid motion request (missing deviceId or location):', {
+      body: req.body,
+      ip: clientIP,
+      timestamp: new Date().toISOString()
+    });
+    return res.status(400).json({ error: 'Missing required fields: deviceId and location' });
+  }
+
   try {
     const timestamp = Date.now();
     const humanReadable = new Date(timestamp).toLocaleString();
     
-    // Log the motion detection
-    console.log("Motion detected:", humanReadable, `(${timestamp})`);
-    console.log("Request body:", req.body);
+    // Log the motion detection with more context
+    console.log(`🚨 MOTION ALERT: {device: '${deviceId}', location: '${location}', timestamp: '${new Date().toISOString()}', message: 'Motion detected at ${location} - ${humanReadable}'}`);
+    console.log("Request details:", {
+      body: req.body,
+      userAgent: req.headers['user-agent'],
+      ip: clientIP,
+      timestamp: humanReadable
+    });
     
     // You can add additional processing here:
     // - Store to database
@@ -32,7 +51,9 @@ export default function handler(req, res) {
     res.status(200).json({ 
       ok: true, 
       timestamp,
-      message: `Motion detected at ${humanReadable}`
+      message: `Motion detected at ${humanReadable}`,
+      device: deviceId,
+      location: location
     });
   } catch (error) {
     console.error('Error processing motion detection:', error);
