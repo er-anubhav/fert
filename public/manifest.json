@@ -28,51 +28,21 @@
   ],
   "icons": [
     {
-      "src": "/images/icon-72x72.png",
-      "sizes": "72x72",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "src": "/images/32-2.ico",
+      "sizes": "32x32",
+      "type": "image/x-icon",
+      "purpose": "any"
     },
     {
-      "src": "/images/icon-96x96.png",
-      "sizes": "96x96",
-      "type": "image/png",
-      "purpose": "maskable any"
+      "src": "/images/fertobot-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
     },
     {
-      "src": "/images/icon-128x128.png",
-      "sizes": "128x128",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/images/icon-144x144.png",
-      "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/images/icon-152x152.png",
-      "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/images/icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/images/icon-384x384.png",
-      "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "maskable any"
-    },
-    {
-      "src": "/images/icon-512x512.png",
+      "src": "/images/512 (1).ico",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/x-icon",
       "purpose": "maskable any"
     }
   ],
@@ -82,28 +52,28 @@
       "short_name": "Dashboard",
       "description": "View farm overview and live data",
       "url": "/dashboard",
-      "icons": [{ "src": "/images/shortcut-dashboard.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/images/fertobot-icon.svg", "sizes": "any" }]
     },
     {
       "name": "Irrigation Control",
       "short_name": "Irrigation",
       "description": "Manage irrigation zones",
-      "url": "/irrigation",
-      "icons": [{ "src": "/images/shortcut-irrigation.png", "sizes": "96x96" }]
+      "url": "/sprinkler",
+      "icons": [{ "src": "/images/fertobot-icon.svg", "sizes": "any" }]
     },
     {
       "name": "Security Cameras",
       "short_name": "Security",
       "description": "Monitor security cameras",
       "url": "/security",
-      "icons": [{ "src": "/images/shortcut-security.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/images/fertobot-icon.svg", "sizes": "any" }]
     },
     {
       "name": "Probes",
       "short_name": "Probes",
       "description": "Manage sensor probes",
       "url": "/probes",
-      "icons": [{ "src": "/images/shortcut-probes.png", "sizes": "96x96" }]
+      "icons": [{ "src": "/images/fertobot-icon.svg", "sizes": "any" }]
     }
   ]
 }

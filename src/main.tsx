@@ -7,6 +7,7 @@ import { CssBaseline } from '@mui/material';
 import { theme } from './utils/theme';
 import './styles/mobile.css';
 import App from './App';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -21,13 +22,15 @@ const queryClient = new QueryClient({
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </ThemeProvider>
-    </QueryClientProvider>
-  </React.StrictMode>,
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <BrowserRouter>
+            <App />
+          </BrowserRouter>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
+  </React.StrictMode>
 );
