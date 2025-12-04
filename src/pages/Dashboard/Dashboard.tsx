@@ -81,36 +81,7 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Function to simulate motion detection (for testing)
-  const testMotionDetection = async () => {
-    try {
-      const success = await motionService.sendMotionAlert('dashboard-test', 'manual-trigger');
-      if (success) {
-        const now = new Date();
-        setMotionNotification({
-          open: true,
-          message: `Motion detected from dashboard test at ${now.toLocaleTimeString()}`,
-          timestamp: now,
-        });
-        console.log('🚨 MOTION DETECTED:', {
-          source: 'dashboard-test',
-          location: 'manual-trigger',
-          timestamp: now.toISOString(),
-          message: `Motion alert sent successfully at ${now.toLocaleString()}`
-        });
-        
-        // Show browser notification if permitted
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification('🚨 Motion Detected!', {
-            body: `Motion detected from dashboard test at ${now.toLocaleTimeString()}`,
-            icon: '/images/icon-192x192.png'
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Motion detection test failed:', error);
-    }
-  };
+
 
   // Listen for external motion events (PowerShell, ESP32, etc.)
   useEffect(() => {
@@ -170,7 +141,6 @@ const Dashboard: React.FC = () => {
   const quickActions = [
     { label: 'Start Irrigation', icon: WaterIcon, color: 'primary' as const, action: () => handleNavigation('/irrigation') },
     { label: 'View Cameras', icon: SecurityIcon, color: 'secondary' as const, action: () => handleNavigation('/security') },
-    { label: 'Test Motion', icon: NotificationsIcon, color: 'warning' as const, action: testMotionDetection },
     { label: 'Check Probes', icon: SensorsIcon, color: 'success' as const, action: () => handleNavigation('/probes') },
     { label: 'Bluetooth Setup', icon: BluetoothIcon, color: 'info' as const, action: () => handleNavigation('/bluetooth') },
   ];
