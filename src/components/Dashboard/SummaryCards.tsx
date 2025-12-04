@@ -127,17 +127,24 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      style={{ width: '100%', display: 'flex' }}
     >
       <Card 
         sx={{ 
+          width: '100%',
           height: '100%',
+          minHeight: { xs: 160, sm: 180 },
           position: 'relative',
           overflow: 'visible',
-          maxWidth: '100%',
-          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          flex: 1,
           '&:hover': {
-            boxShadow: theme.shadows[4],
+            boxShadow: theme.shadows[8],
+            transform: 'translateY(-2px)',
           },
+          transition: 'all 0.3s ease-in-out',
+          borderRadius: 2,
         }}
       >
         {/* Status indicator */}
@@ -154,18 +161,38 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, index }) => {
           }}
         />
 
-        <CardContent sx={{ p: 3 }}>
+        <CardContent sx={{ 
+          p: { xs: 2, sm: 2.5 }, 
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%',
+        }}>
+          {/* Header section */}
           <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
-            <Box>
-              <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500, mb: 1 }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ 
+                fontWeight: 500, 
+                mb: 1,
+                fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                lineHeight: 1.2,
+              }}>
                 {data.title}
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                <Typography variant="h4" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                <Typography variant="h4" sx={{ 
+                  fontWeight: 700, 
+                  lineHeight: 1,
+                  fontSize: { xs: '1.5rem', sm: '1.875rem' },
+                  color: 'text.primary',
+                }}>
                   {data.value}
                 </Typography>
                 {data.unit && (
-                  <Typography variant="body1" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" sx={{
+                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                    fontWeight: 500,
+                  }}>
                     {data.unit}
                   </Typography>
                 )}
@@ -174,37 +201,45 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, index }) => {
             
             <Box
               sx={{
-                width: 48,
-                height: 48,
-                borderRadius: 2,
-                backgroundColor: `${data.color}20`,
+                width: { xs: 36, sm: 44 },
+                height: { xs: 36, sm: 44 },
+                borderRadius: 1.5,
+                backgroundColor: `${data.color}15`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                flexShrink: 0,
+                ml: 1.5,
               }}
             >
-              <Icon sx={{ fontSize: 24, color: data.color }} />
+              <Icon sx={{ fontSize: { xs: 18, sm: 22 }, color: data.color }} />
             </Box>
           </Box>
+          
+          {/* Spacer */}
+          <Box sx={{ flex: 1 }} />
 
-          {/* Change indicator */}
-          {data.change && (
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Chip
-                label={`${getTrendSymbol(data.change.trend)} ${Math.abs(data.change.value)}${data.unit || ''}`}
-                size="small"
-                sx={{
-                  backgroundColor: `${getTrendColor(data.change.trend)}20`,
-                  color: getTrendColor(data.change.trend),
-                  fontWeight: 600,
-                  fontSize: '0.75rem',
-                }}
-              />
-              <Typography variant="caption" color="text.secondary">
-                vs {data.change.period}
-              </Typography>
-            </Box>
-          )}
+          {/* Change indicator - always at bottom */}
+          <Box sx={{ mt: 'auto' }}>
+            {data.change && (
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                <Chip
+                  label={`${getTrendSymbol(data.change.trend)} ${Math.abs(data.change.value)}${data.unit || ''}`}
+                  size="small"
+                  sx={{
+                    backgroundColor: `${getTrendColor(data.change.trend)}15`,
+                    color: getTrendColor(data.change.trend),
+                    fontWeight: 600,
+                    fontSize: '0.7rem',
+                    height: 24,
+                  }}
+                />
+                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
+                  vs {data.change.period}
+                </Typography>
+              </Box>
+            )}
+          </Box>
 
           {/* Special progress bar for water tank */}
           {data.id === 'water_tank' && typeof data.value === 'number' && (
@@ -238,20 +273,27 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, index }) => {
 
 const SummaryCards: React.FC = () => {
   return (
-    <Grid container spacing={3} sx={{ 
-      maxWidth: '100%',
-      margin: 0,
+    <Box sx={{
+      display: 'grid',
+      gridTemplateColumns: {
+        xs: '1fr',
+        sm: 'repeat(2, 1fr)',
+        md: 'repeat(3, 1fr)',
+        lg: 'repeat(4, 1fr)',
+        xl: 'repeat(6, 1fr)',
+      },
+      gap: { xs: 2, sm: 2.5, md: 3 },
       width: '100%',
-      '& .MuiGrid-item': {
-        maxWidth: '100%'
-      }
     }}>
       {mockSummaryData.map((card, index) => (
-        <Grid item xs={12} sm={6} md={4} lg={2} key={card.id} sx={{ maxWidth: '100%' }}>
+        <Box key={card.id} sx={{ 
+          minHeight: { xs: 160, sm: 180 },
+          display: 'flex',
+        }}>
           <SummaryCard data={card} index={index} />
-        </Grid>
+        </Box>
       ))}
-    </Grid>
+    </Box>
   );
 };
 

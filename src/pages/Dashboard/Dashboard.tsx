@@ -77,9 +77,11 @@ const Dashboard: React.FC = () => {
       initial="hidden"
       animate="visible"
       variants={animationVariants.stagger}
+      style={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}
     >
       <Box sx={{ 
-        mb: 4,
+        mb: 1,
+        width: '100%',
         maxWidth: '100%',
         overflow: 'hidden'
       }}>
@@ -114,16 +116,16 @@ const Dashboard: React.FC = () => {
         
         {/* Quick Actions Panel */}
         <motion.div variants={animationVariants.fadeIn}>
-          <Card sx={{ mb: 3 }}>
+          <Card sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
             <CardContent>
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
                 Quick Actions
               </Typography>
-              <Grid container spacing={2}>
+              <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%' }}>
                 {quickActions.map((action, index) => {
                   const IconComponent = action.icon;
                   return (
-                    <Grid item xs={6} sm={3} key={index}>
+                    <Grid item xs={6} sm={6} md={3} key={index}>
                       <Button
                         variant="outlined"
                         color={action.color}
@@ -151,66 +153,51 @@ const Dashboard: React.FC = () => {
         </motion.div>
       </Box>
 
-      <Grid container spacing={3} sx={{ 
-        maxWidth: '100%',
-        margin: 0,
+      {/* Summary Cards Row - Outside Grid to remove padding */}
+      <motion.div variants={animationVariants.fadeIn} style={{ marginBottom: '24px' }}>
+        <SummaryCards />
+      </motion.div>
+
+      {/* Main Content Section - Flex Column Layout */}
+      <Box sx={{ 
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 3,
+        mb: 3,
         width: '100%',
-        '& .MuiGrid-item': {
-          maxWidth: '100%'
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+        '& > *': {
+          width: '100%',
+          maxWidth: '100%',
+          boxSizing: 'border-box'
         }
       }}>
-        {/* Summary Cards Row */}
-        <Grid item xs={12} sx={{ maxWidth: '100%' }}>
-          <motion.div variants={animationVariants.fadeIn}>
-            <SummaryCards />
-          </motion.div>
-        </Grid>
+        {/* Live Charts */}
+        <motion.div variants={animationVariants.slideIn}>
+          <LiveCharts />
+        </motion.div>
 
-        {/* Main Content Row */}
-        <Grid item xs={12} lg={8} sx={{ maxWidth: '100%' }}>
-          <Grid container spacing={3} sx={{ maxWidth: '100%', margin: 0, width: '100%' }}>
-            {/* Live Charts */}
-            <Grid item xs={12} sx={{ maxWidth: '100%' }}>
-              <motion.div variants={animationVariants.slideIn}>
-                <LiveCharts />
-              </motion.div>
-            </Grid>
+        {/* Recommendations Panel */}
+        <motion.div variants={animationVariants.slideIn}>
+          <RecommendationsPanel />
+        </motion.div>
 
-            {/* Recommendations Panel */}
-            <Grid item xs={12} sx={{ maxWidth: '100%' }}>
-              <motion.div variants={animationVariants.slideIn}>
-                <RecommendationsPanel />
-              </motion.div>
-            </Grid>
-          </Grid>
-        </Grid>
+        {/* Weather Widget */}
+        <motion.div variants={animationVariants.scaleIn}>
+          <WeatherWidget />
+        </motion.div>
 
-        {/* Right Sidebar */}
-        <Grid item xs={12} lg={4} sx={{ maxWidth: '100%' }}>
-          <Grid container spacing={3} sx={{ maxWidth: '100%', margin: 0, width: '100%' }}>
-            {/* Weather Widget */}
-            <Grid item xs={12}>
-              <motion.div variants={animationVariants.scaleIn}>
-                <WeatherWidget />
-              </motion.div>
-            </Grid>
+        {/* Connectivity Status */}
+        <motion.div variants={animationVariants.scaleIn}>
+          <ConnectivityStatus />
+        </motion.div>
 
-            {/* Connectivity Status */}
-            <Grid item xs={12}>
-              <motion.div variants={animationVariants.scaleIn}>
-                <ConnectivityStatus />
-              </motion.div>
-            </Grid>
-
-            {/* Alerts Panel */}
-            <Grid item xs={12}>
-              <motion.div variants={animationVariants.scaleIn}>
-                <AlertsPanel />
-              </motion.div>
-            </Grid>
-          </Grid>
-        </Grid>
-      </Grid>
+        {/* Alerts Panel */}
+        <motion.div variants={animationVariants.scaleIn}>
+          <AlertsPanel />
+        </motion.div>
+      </Box>
       
       {/* Notification Dialog */}
       <Dialog 

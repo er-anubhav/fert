@@ -6,7 +6,6 @@ import {
   Box,
   Tabs,
   Tab,
-  Grid,
   IconButton,
   Tooltip,
   useTheme,
@@ -160,7 +159,7 @@ const LiveCharts: React.FC = () => {
   };
 
   return (
-    <Card>
+    <Card sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
           <Typography variant="h6" sx={{ fontWeight: 600 }}>
@@ -198,13 +197,13 @@ const LiveCharts: React.FC = () => {
 
         {/* Moisture & Climate Tab */}
         <TabPanel value={activeTab} index={0}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} lg={6}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3, width: '100%' }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
               <Box sx={{ height: 300 }}>
                 <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
                   Soil Moisture (Last 7 Days)
                 </Typography>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <AreaChart data={mockData}>
                     <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
                     <XAxis 
@@ -229,14 +228,14 @@ const LiveCharts: React.FC = () => {
                   </AreaChart>
                 </ResponsiveContainer>
               </Box>
-            </Grid>
+            </Box>
             
-            <Grid item xs={12} lg={6}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
               <Box sx={{ height: 300 }}>
                 <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
                   Temperature & Humidity
                 </Typography>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <LineChart data={mockData}>
                     <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
                     <XAxis 
@@ -268,8 +267,8 @@ const LiveCharts: React.FC = () => {
                   </LineChart>
                 </ResponsiveContainer>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </TabPanel>
 
         {/* NPK Nutrients Tab */}
@@ -278,7 +277,7 @@ const LiveCharts: React.FC = () => {
             <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
               N-P-K Trinity Graph (Last 7 Days)
             </Typography>
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
               <LineChart data={mockData}>
                 <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
                 <XAxis 
@@ -325,13 +324,13 @@ const LiveCharts: React.FC = () => {
 
         {/* pH & Trends Tab */}
         <TabPanel value={activeTab} index={2}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} lg={8}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3, width: '100%' }}>
+            <Box sx={{ flex: 2, minWidth: 0 }}>
               <Box sx={{ height: 300 }}>
                 <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
                   pH Level Trends
                 </Typography>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <LineChart data={mockData}>
                     <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
                     <XAxis 
@@ -375,9 +374,9 @@ const LiveCharts: React.FC = () => {
                   </LineChart>
                 </ResponsiveContainer>
               </Box>
-            </Grid>
+            </Box>
             
-            <Grid item xs={12} lg={4}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
               <Box
                 sx={{
                   p: 3,
@@ -385,6 +384,7 @@ const LiveCharts: React.FC = () => {
                   borderRadius: 2,
                   border: '1px solid',
                   borderColor: colors.primary[200],
+                  height: 'fit-content'
                 }}
               >
                 <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
@@ -431,19 +431,19 @@ const LiveCharts: React.FC = () => {
                   </Typography>
                 </Box>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </TabPanel>
 
         {/* Micro/Macro Nutrients Tab */}
         <TabPanel value={activeTab} index={3}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} lg={6}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3, width: '100%' }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
               <Box sx={{ height: 300 }}>
                 <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
                   Micronutrient Levels
                 </Typography>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <BarChart
                     data={[
                       { name: 'Iron', value: 12.5, optimal: 15 },
@@ -462,14 +462,14 @@ const LiveCharts: React.FC = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </Box>
-            </Grid>
+            </Box>
             
-            <Grid item xs={12} lg={6}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
               <Box sx={{ height: 300 }}>
                 <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                  Macronutrient Levels
+                  Macronutrient Balance
                 </Typography>
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
                   <BarChart
                     data={[
                       { name: 'Calcium', value: 85, optimal: 90 },
@@ -486,8 +486,8 @@ const LiveCharts: React.FC = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </Box>
-            </Grid>
-          </Grid>
+            </Box>
+          </Box>
         </TabPanel>
       </CardContent>
     </Card>

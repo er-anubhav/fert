@@ -375,7 +375,7 @@ const AlertsPanel: React.FC = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <Card>
+      <Card sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
         <CardContent>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

@@ -303,7 +303,7 @@ const RecommendationsPanel: React.FC = () => {
   const criticalCount = mockRecommendations.filter(r => r.priority === 'critical').length;
 
   return (
-    <Card>
+    <Card sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
           <Box>

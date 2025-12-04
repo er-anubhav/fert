@@ -266,7 +266,7 @@ const ConnectivityStatus: React.FC = () => {
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <Card>
+      <Card sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
         <CardContent>
           <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
             Device Connectivity

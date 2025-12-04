@@ -1,4 +1,9 @@
 {
+  "functions": {
+    "api/*.js": {
+      "runtime": "nodejs18.x"
+    }
+  },
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -29,6 +34,6 @@
     }
   ],
   "rewrites": [
-    { "source": "/((?!assets|manifest\\.json|sw\\.js|favicon\\.ico).*)", "destination": "/index.html" }
+    { "source": "/((?!assets|manifest\\.json|sw\\.js|favicon\\.ico|api).*)", "destination": "/index.html" }
   ]
 }
