@@ -97,9 +97,9 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Motion notifications will now only come from:
-  // 1. Manual "Test Motion" button clicks
-  // 2. External API calls to https://fertobot.vercel.app/api/motion
+  // Motion notifications will come from:
+  // 1. Manual "Test Motion" button clicks  
+  // 2. ESP32 will hit the API directly (you'll see logs in Vercel console)
 
   const handleCloseMotionNotification = () => {
     setMotionNotification(prev => ({ ...prev, open: false }));

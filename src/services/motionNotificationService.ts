@@ -5,10 +5,8 @@ export class MotionNotificationService {
   private apiUrl: string;
 
   constructor(baseUrl?: string) {
-    // Use your Vercel domain or localhost for development
-    this.apiUrl = baseUrl || (process.env.NODE_ENV === 'production' 
-      ? 'https://fertobot.vercel.app/api/motion' 
-      : 'http://localhost:3000/api/motion');
+    // Always use Vercel domain for motion API
+    this.apiUrl = baseUrl || 'https://fertobot.vercel.app/api/motion';
   }
 
   async sendMotionAlert(deviceId?: string, location?: string): Promise<boolean> {

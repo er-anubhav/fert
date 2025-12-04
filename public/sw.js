@@ -1,14 +1,6 @@
 const CACHE_NAME = 'fertobot-v1.0.0';
 const urlsToCache = [
   '/',
-  '/dashboard',
-  '/probes',
-  '/irrigation',
-  '/security',
-  '/bluetooth',
-  '/profile',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
   '/manifest.json',
   '/images/icon-192x192.png',
   '/images/icon-512x512.png',
@@ -20,7 +12,18 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => {
         console.log('Opened cache');
-        return cache.addAll(urlsToCache);
+        // Cache files individually to avoid failures from missing files
+        return Promise.allSettled(
+          urlsToCache.map(url => 
+            cache.add(url).catch(err => {
+              console.warn('Failed to cache:', url, err);
+              return null;
+            })
+          )
+        );
+      })
+      .catch(err => {
+        console.error('Cache installation failed:', err);
       })
   );
 });
