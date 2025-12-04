@@ -129,6 +129,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <BottomNavigation
           value={bottomNavValue}
           onChange={handleBottomNavChange}
+          showLabels
           sx={{
             height: 64,
             touchAction: 'manipulation',

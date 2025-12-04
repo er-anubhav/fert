@@ -90,7 +90,7 @@ const Dashboard: React.FC = () => {
                 Farm Overview
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Real-time monitoring and insights powered by FertoBot
+                powered by FertoBot
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
