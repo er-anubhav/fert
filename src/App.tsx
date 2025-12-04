@@ -13,7 +13,20 @@ import Profile from './pages/Profile/Profile';
 
 function App() {
   return (
-    <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      minHeight: '100vh',
+      touchAction: 'pan-x pan-y',
+      userSelect: 'none',
+      WebkitTouchCallout: 'none',
+      WebkitUserSelect: 'none',
+      KhtmlUserSelect: 'none',
+      MozUserSelect: 'none',
+      msUserSelect: 'none',
+      '& *': {
+        WebkitTapHighlightColor: 'transparent',
+      }
+    }}>
       <PWAInstallButton variant="banner" />
       <Layout>
         <Routes>

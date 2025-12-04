@@ -115,9 +115,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           onChange={handleBottomNavChange}
           sx={{
             height: 64,
+            touchAction: 'manipulation',
+            userSelect: 'none',
             '& .MuiBottomNavigationAction-root': {
               minWidth: 'auto',
               padding: '6px 0 8px',
+              touchAction: 'manipulation',
+              WebkitTapHighlightColor: 'transparent',
+              userSelect: 'none',
+              '&:active': {
+                transform: 'scale(0.95)',
+                transition: 'transform 0.1s ease',
+              },
               '&.Mui-selected': {
                 color: 'primary.main',
               },
@@ -125,6 +134,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             '& .MuiBottomNavigationAction-label': {
               fontSize: '0.75rem',
               fontWeight: 500,
+              userSelect: 'none',
               '&.Mui-selected': {
                 fontSize: '0.75rem',
               },

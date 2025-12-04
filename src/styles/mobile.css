@@ -1,0 +1,81 @@
+/* Global styles for professional tablet/mobile experience */
+html {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+body {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Allow text selection only for input elements */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Prevent double-tap zoom */
+a, button, [role="button"] {
+  touch-action: manipulation;
+}
+
+/* Remove default tap highlighting */
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-focus-ring-color: transparent;
+  outline: none;
+}
+
+/* Improve scrolling performance */
+.scroll-container {
+  -webkit-overflow-scrolling: touch;
+  overflow-scrolling: touch;
+}
+
+/* Prevent pull-to-refresh */
+body {
+  overscroll-behavior-y: none;
+}
+
+/* Better button and interactive element sizing for touch */
+button, [role="button"] {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Prevent zooming on input focus on iOS */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+textarea {
+  font-size: 16px !important;
+}
+
+/* Smooth transitions for better user experience */
+* {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}

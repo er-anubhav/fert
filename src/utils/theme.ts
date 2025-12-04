@@ -186,6 +186,14 @@ const themeOptions: ThemeOptions = {
           textTransform: 'none',
           fontWeight: 600,
           padding: '8px 24px',
+          minHeight: 44, // Better touch target size
+          touchAction: 'manipulation',
+          WebkitTapHighlightColor: 'transparent',
+          userSelect: 'none',
+          '&:active': {
+            transform: 'scale(0.98)',
+            transition: 'transform 0.1s ease',
+          },
         },
         contained: {
           boxShadow: 'none',
@@ -226,6 +234,14 @@ const themeOptions: ThemeOptions = {
         root: {
           borderRadius: 8,
           margin: '4px 8px',
+          minHeight: 44, // Better touch target size
+          touchAction: 'manipulation',
+          WebkitTapHighlightColor: 'transparent',
+          userSelect: 'none',
+          '&:active': {
+            transform: 'scale(0.98)',
+            transition: 'transform 0.1s ease',
+          },
           '&.Mui-selected': {
             backgroundColor: colors.primary[50],
             color: colors.primary[700],
@@ -251,6 +267,34 @@ const themeOptions: ThemeOptions = {
           textTransform: 'none',
           fontWeight: 600,
           fontSize: '1rem',
+          minHeight: 44, // Better touch target size
+          touchAction: 'manipulation',
+          WebkitTapHighlightColor: 'transparent',
+          userSelect: 'none',
+        },
+      },
+    },
+    MuiCssBaseline: {
+      styleOverrides: {
+        html: {
+          touchAction: 'manipulation',
+          WebkitTextSizeAdjust: '100%',
+          WebkitTapHighlightColor: 'transparent',
+        },
+        body: {
+          touchAction: 'manipulation',
+          userSelect: 'none',
+          WebkitUserSelect: 'none',
+          WebkitTouchCallout: 'none',
+          WebkitTapHighlightColor: 'transparent',
+          overscrollBehavior: 'none',
+        },
+        '*': {
+          WebkitTapHighlightColor: 'transparent',
+        },
+        'input, textarea': {
+          userSelect: 'text',
+          WebkitUserSelect: 'text',
         },
       },
     },

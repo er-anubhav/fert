@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
 import { theme } from './utils/theme';
+import './styles/mobile.css';
 import App from './App';
 
 // Create a client for React Query
