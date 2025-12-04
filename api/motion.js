@@ -1,8 +1,16 @@
+// Global variable to track last motion (works within single function instance)
+let lastMotionData = {
+  device: null,
+  location: null,
+  timestamp: 0,
+  message: null
+};
+
 // Vercel serverless function for motion detection
 export default function handler(req, res) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   // Handle preflight OPTIONS request
@@ -11,7 +19,26 @@ export default function handler(req, res) {
     return;
   }
 
-  // Only allow POST requests
+  // Handle GET requests for dashboard polling
+  if (req.method === 'GET') {
+    const { since } = req.query;
+    const sinceTime = parseInt(since) || 0;
+    
+    if (lastMotionData.timestamp > sinceTime && lastMotionData.device) {
+      return res.status(200).json({
+        ok: true,
+        hasNewMotion: true,
+        motion: lastMotionData
+      });
+    } else {
+      return res.status(200).json({
+        ok: true,
+        hasNewMotion: false
+      });
+    }
+  }
+
+  // Only allow POST requests for motion detection
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -24,6 +51,14 @@ export default function handler(req, res) {
   try {
     const timestamp = Date.now();
     const humanReadable = new Date(timestamp).toLocaleString();
+    
+    // Store motion data for dashboard polling
+    lastMotionData = {
+      device: finalDeviceId,
+      location: finalLocation,
+      timestamp: timestamp,
+      message: `Motion detected at ${finalLocation} - ${humanReadable}`
+    };
     
     // Log the motion detection - this will show in console
     console.log(`🚨 MOTION ALERT: {device: '${finalDeviceId}', timestamp: '${new Date().toISOString()}', message: 'Motion detected at ${finalLocation} - ${humanReadable}'}`);

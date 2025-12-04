@@ -112,30 +112,50 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  // Simple polling for ESP32 motion events
+  // Listen for external motion events (PowerShell, ESP32, etc.)
   useEffect(() => {
-    let lastNotificationTime = localStorage.getItem('lastMotionNotification') || '0';
+    let lastChecked = Date.now() - 30000; // Check last 30 seconds on start
     
-    const checkForMotionEvents = async () => {
+    const checkForExternalMotion = async () => {
       try {
-        // Make a test call to see if there are recent motion events
-        const testResponse = await fetch('https://fertobot.vercel.app/api/motion', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ deviceId: 'dashboard-poll', location: 'check', poll: true })
-        });
-        
-        if (testResponse.ok) {
-          const data = await testResponse.json();
-          // This is just a connectivity check - real notifications come from manual testing
+        const response = await fetch(`https://fertobot.vercel.app/api/motion?since=${lastChecked}`);
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data.hasNewMotion && data.motion) {
+            const motion = data.motion;
+            
+            setMotionNotification({
+              open: true,
+              message: `Motion detected by ${motion.device} at ${motion.location}`,
+              timestamp: new Date(motion.timestamp),
+            });
+            
+            console.log('🚨 EXTERNAL MOTION DETECTED:', motion);
+            
+            // Show browser notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('🚨 External Motion Detected!', {
+                body: `Motion by ${motion.device} at ${motion.location}`,
+                icon: '/images/icon-192x192.png'
+              });
+            }
+            
+            lastChecked = motion.timestamp;
+          }
         }
       } catch (error) {
         // Silently handle polling errors
+        console.log('Motion polling error (this is normal):', error.message);
       }
     };
 
-    // Check every 10 seconds
-    const interval = setInterval(checkForMotionEvents, 10000);
+    // Check every 3 seconds for external motion events
+    const interval = setInterval(checkForExternalMotion, 3000);
+    
+    // Check immediately
+    checkForExternalMotion();
+    
     return () => clearInterval(interval);
   }, []);
 
