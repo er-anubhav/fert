@@ -146,7 +146,7 @@ const Dashboard: React.FC = () => {
         }
       } catch (error) {
         // Silently handle polling errors
-        console.log('Motion polling error (this is normal):', error.message);
+        console.log('Motion polling error (this is normal):', error instanceof Error ? error.message : 'Unknown error');
       }
     };
 
