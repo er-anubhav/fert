@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Grid,
   Box,
@@ -45,13 +46,24 @@ import { animationVariants } from '../../utils/theme';
 
 const Dashboard: React.FC = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [notificationDialog, setNotificationDialog] = useState(false);
   
+  const handleNavigation = (path: string) => {
+    try {
+      navigate(path);
+    } catch (error) {
+      console.error('Navigation error:', error);
+      // Fallback to window.location as last resort
+      window.location.href = path;
+    }
+  };
+
   const quickActions = [
-    { label: 'Start Irrigation', icon: WaterIcon, color: 'primary', action: () => console.log('Start irrigation') },
-    { label: 'View Cameras', icon: SecurityIcon, color: 'secondary', action: () => window.location.href = '/security' },
-    { label: 'Check Probes', icon: SensorsIcon, color: 'success', action: () => window.location.href = '/probes' },
-    { label: 'Bluetooth Setup', icon: BluetoothIcon, color: 'info', action: () => window.location.href = '/bluetooth' },
+    { label: 'Start Irrigation', icon: WaterIcon, color: 'primary' as const, action: () => handleNavigation('/irrigation') },
+    { label: 'View Cameras', icon: SecurityIcon, color: 'secondary' as const, action: () => handleNavigation('/security') },
+    { label: 'Check Probes', icon: SensorsIcon, color: 'success' as const, action: () => handleNavigation('/probes') },
+    { label: 'Bluetooth Setup', icon: BluetoothIcon, color: 'info' as const, action: () => handleNavigation('/bluetooth') },
   ];
   
   const recentNotifications = [
@@ -110,7 +122,7 @@ const Dashboard: React.FC = () => {
                     <Grid item xs={6} sm={3} key={index}>
                       <Button
                         variant="outlined"
-                        color={action.color as any}
+                        color={action.color}
                         startIcon={<IconComponent />}
                         onClick={action.action}
                         fullWidth
