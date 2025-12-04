@@ -78,7 +78,11 @@ const Dashboard: React.FC = () => {
       animate="visible"
       variants={animationVariants.stagger}
     >
-      <Box sx={{ mb: 4 }}>
+      <Box sx={{ 
+        mb: 4,
+        maxWidth: '100%',
+        overflow: 'hidden'
+      }}>
         <motion.div variants={animationVariants.fadeIn}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
             <Box>
@@ -147,26 +151,33 @@ const Dashboard: React.FC = () => {
         </motion.div>
       </Box>
 
-      <Grid container spacing={3}>
+      <Grid container spacing={3} sx={{ 
+        maxWidth: '100%',
+        margin: 0,
+        width: '100%',
+        '& .MuiGrid-item': {
+          maxWidth: '100%'
+        }
+      }}>
         {/* Summary Cards Row */}
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{ maxWidth: '100%' }}>
           <motion.div variants={animationVariants.fadeIn}>
             <SummaryCards />
           </motion.div>
         </Grid>
 
         {/* Main Content Row */}
-        <Grid item xs={12} lg={8}>
-          <Grid container spacing={3}>
+        <Grid item xs={12} lg={8} sx={{ maxWidth: '100%' }}>
+          <Grid container spacing={3} sx={{ maxWidth: '100%', margin: 0, width: '100%' }}>
             {/* Live Charts */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ maxWidth: '100%' }}>
               <motion.div variants={animationVariants.slideIn}>
                 <LiveCharts />
               </motion.div>
             </Grid>
 
             {/* Recommendations Panel */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ maxWidth: '100%' }}>
               <motion.div variants={animationVariants.slideIn}>
                 <RecommendationsPanel />
               </motion.div>
@@ -175,8 +186,8 @@ const Dashboard: React.FC = () => {
         </Grid>
 
         {/* Right Sidebar */}
-        <Grid item xs={12} lg={4}>
-          <Grid container spacing={3}>
+        <Grid item xs={12} lg={4} sx={{ maxWidth: '100%' }}>
+          <Grid container spacing={3} sx={{ maxWidth: '100%', margin: 0, width: '100%' }}>
             {/* Weather Widget */}
             <Grid item xs={12}>
               <motion.div variants={animationVariants.scaleIn}>

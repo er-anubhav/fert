@@ -94,49 +94,58 @@ const themeOptions: ThemeOptions = {
     },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Inter", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif',
     h1: {
       fontSize: '2.5rem',
       fontWeight: 700,
       lineHeight: 1.2,
+      fontFamily: '"Poppins", "Inter", sans-serif',
     },
     h2: {
       fontSize: '2rem',
       fontWeight: 600,
       lineHeight: 1.3,
+      fontFamily: '"Poppins", "Inter", sans-serif',
     },
     h3: {
       fontSize: '1.75rem',
       fontWeight: 600,
       lineHeight: 1.4,
+      fontFamily: '"Poppins", "Inter", sans-serif',
     },
     h4: {
       fontSize: '1.5rem',
       fontWeight: 600,
       lineHeight: 1.4,
+      fontFamily: '"Poppins", "Inter", sans-serif',
     },
     h5: {
       fontSize: '1.25rem',
       fontWeight: 600,
       lineHeight: 1.5,
+      fontFamily: '"Poppins", "Inter", sans-serif',
     },
     h6: {
       fontSize: '1rem',
       fontWeight: 600,
       lineHeight: 1.5,
+      fontFamily: '"Poppins", "Inter", sans-serif',
     },
     body1: {
       fontSize: '1rem',
       lineHeight: 1.6,
+      fontFamily: '"Inter", "Poppins", sans-serif',
     },
     body2: {
       fontSize: '0.875rem',
       lineHeight: 1.5,
+      fontFamily: '"Inter", "Poppins", sans-serif',
     },
     caption: {
       fontSize: '0.75rem',
       lineHeight: 1.4,
       color: colors.neutral[600],
+      fontFamily: '"Inter", "Poppins", sans-serif',
     },
   },
   shape: {
@@ -189,6 +198,7 @@ const themeOptions: ThemeOptions = {
           minHeight: 44, // Better touch target size
           touchAction: 'manipulation',
           WebkitTapHighlightColor: 'transparent',
+          fontFamily: '"Inter", "Poppins", sans-serif',
           userSelect: 'none',
           '&:active': {
             transform: 'scale(0.98)',

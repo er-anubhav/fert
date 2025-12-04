@@ -133,6 +133,8 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, index }) => {
           height: '100%',
           position: 'relative',
           overflow: 'visible',
+          maxWidth: '100%',
+          width: '100%',
           '&:hover': {
             boxShadow: theme.shadows[4],
           },
@@ -236,9 +238,16 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, index }) => {
 
 const SummaryCards: React.FC = () => {
   return (
-    <Grid container spacing={3}>
+    <Grid container spacing={3} sx={{ 
+      maxWidth: '100%',
+      margin: 0,
+      width: '100%',
+      '& .MuiGrid-item': {
+        maxWidth: '100%'
+      }
+    }}>
       {mockSummaryData.map((card, index) => (
-        <Grid item xs={12} sm={6} lg={2} key={card.id}>
+        <Grid item xs={12} sm={6} md={4} lg={2} key={card.id} sx={{ maxWidth: '100%' }}>
           <SummaryCard data={card} index={index} />
         </Grid>
       ))}

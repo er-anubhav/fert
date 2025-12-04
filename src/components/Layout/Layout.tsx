@@ -82,16 +82,28 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      minHeight: '100vh',
+      position: 'relative',
+      overflow: 'hidden',
+      width: '100%'
+    }}>
       {/* Main Content */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           backgroundColor: 'background.default',
-          pb: 8, // Account for bottom navigation
+          pb: 10, // Increased padding for bottom navigation
           px: { xs: 2, sm: 3 },
           pt: { xs: 2, sm: 3 },
+          position: 'relative',
+          zIndex: 1,
+          overflowY: 'auto',
+          minHeight: 'calc(100vh - 80px)',
+          maxHeight: 'calc(100vh - 80px)',
         }}
       >
         {children}
@@ -100,13 +112,17 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Bottom Navigation */}
       <Paper
         sx={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: theme.zIndex.appBar,
+          position: 'fixed !important',
+          bottom: '0 !important',
+          left: '0 !important',
+          right: '0 !important',
+          width: '100% !important',
+          zIndex: '1100 !important', // Higher than default to ensure it stays on top
           borderTop: '1px solid',
           borderColor: 'divider',
+          backgroundColor: 'background.paper',
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
         }}
         elevation={8}
       >
