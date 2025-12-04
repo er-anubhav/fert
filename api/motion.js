@@ -28,13 +28,14 @@ export default function handler(req, res) {
     // Log the motion detection - this will show in console
     console.log(`🚨 MOTION ALERT: {device: '${finalDeviceId}', timestamp: '${new Date().toISOString()}', message: 'Motion detected at ${finalLocation} - ${humanReadable}'}`);
     
-    // Simple success response for ESP32
+    // Simple success response for ESP32 with notification flag
     res.status(200).json({ 
       ok: true, 
       timestamp,
       message: `Motion detected at ${humanReadable}`,
       device: finalDeviceId,
-      location: finalLocation
+      location: finalLocation,
+      notify: true  // Flag to indicate this should trigger notifications
     });
   } catch (error) {
     console.error('Error processing motion detection:', error);
