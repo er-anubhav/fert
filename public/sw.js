@@ -8,6 +8,9 @@ const urlsToCache = [
 
 // Install Service Worker
 self.addEventListener('install', (event) => {
+  // Skip waiting to activate immediately
+  self.skipWaiting();
+  
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -82,6 +85,18 @@ self.addEventListener('push', (event) => {
       self.registration.showNotification(data.title, options)
     );
   }
+});
+
+// Handle skip waiting message
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Activate immediately and claim clients
+self.addEventListener('activate', (event) => {
+  event.waitUntil(self.clients.claim());
 });
 
 // Notification click
