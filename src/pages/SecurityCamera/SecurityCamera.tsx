@@ -43,7 +43,7 @@ import {
   Schedule as ScheduleIcon,
   FiberManualRecord as RecordingIcon,
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { colors } from '../../utils/theme';
 import { MotionNotificationService } from '../../services/motionNotificationService';
 
 interface Camera {
@@ -67,20 +67,7 @@ interface SecurityAlert {
   acknowledged: boolean;
 }
 
-const animationVariants = {
-  fadeIn: {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  },
-  stagger: {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  },
-};
+
 
 const SecurityCamera: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -100,74 +87,51 @@ const SecurityCamera: React.FC = () => {
   // Initialize motion service
   const motionService = new MotionNotificationService();
   
+  // Test function to simulate motion detection
+  const testMotionAlert = async () => {
+    try {
+      console.log('Testing motion detection...');
+      await motionService.sendMotionAlert('cam-001', 'newgen iedc field area');
+      setMotionAlert({
+        open: true,
+        message: 'Test motion alert sent! Check the Alerts Panel in the Dashboard.',
+        camera: 'cam-001'
+      });
+    } catch (error) {
+      console.error('Failed to send test motion alert:', error);
+    }
+  };
+  
   const [cameras] = useState<Camera[]>([
     {
-      id: 'cam-1',
-      name: 'North Field Camera',
-      location: 'North Entrance',
-      status: 'online',
-      lastMotion: '2024-12-04T14:30:00',
-      recording: true,
-      nightVision: true,
-      resolution: '1080p',
-      battery: 85,
-    },
-    {
-      id: 'cam-2',
-      name: 'South Field Camera',
-      location: 'South Perimeter',
-      status: 'recording',
-      lastMotion: '2024-12-04T14:45:00',
-      recording: true,
-      nightVision: false,
-      resolution: '4K',
-    },
-    {
-      id: 'cam-3',
-      name: 'Greenhouse Camera',
-      location: 'Inside Greenhouse',
-      status: 'online',
-      recording: false,
-      nightVision: true,
-      resolution: '1080p',
-      battery: 45,
-    },
-    {
-      id: 'cam-4',
-      name: 'Storage Camera',
-      location: 'Equipment Storage',
+      id: 'cam-001',
+      name: 'newgen iedc camera',
+      location: 'field monitoring',
       status: 'offline',
+      lastMotion: '2025-12-03T14:37:00',
       recording: false,
-      nightVision: false,
-      resolution: '720p',
+      nightVision: true,
+      resolution: '1080p',
       battery: 15,
     },
   ]);
 
   const [alerts] = useState<SecurityAlert[]>([
     {
-      id: 'alert-1',
-      type: 'motion',
-      camera: 'North Field Camera',
-      timestamp: '2024-12-04T14:45:23',
-      severity: 'medium',
-      acknowledged: false,
-    },
-    {
-      id: 'alert-2',
-      type: 'low_battery',
-      camera: 'Storage Camera',
-      timestamp: '2024-12-04T13:20:15',
-      severity: 'high',
-      acknowledged: false,
-    },
-    {
-      id: 'alert-3',
+      id: 'alert-001',
       type: 'offline',
-      camera: 'Storage Camera',
-      timestamp: '2024-12-04T12:15:42',
+      camera: 'newgen iedc camera',
+      timestamp: '2025-12-03T14:37:00',
       severity: 'high',
-      acknowledged: true,
+      acknowledged: false,
+    },
+    {
+      id: 'alert-002',
+      type: 'low_battery',
+      camera: 'newgen iedc camera',
+      timestamp: '2025-12-03T14:35:00',
+      severity: 'high',
+      acknowledged: false,
     },
   ]);
 
@@ -245,121 +209,134 @@ const SecurityCamera: React.FC = () => {
   };
 
   const CameraCard = ({ camera }: { camera: Camera }) => (
-    <motion.div variants={animationVariants.fadeIn}>
-      <Card sx={{ height: '100%', position: 'relative' }}>
-        {/* Fake Video Feed */}
-        <Box 
-          sx={{ 
-            height: { xs: 160, sm: 200 }, 
-            bgcolor: 'grey.900', 
-            position: 'relative',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundImage: camera.status === 'offline' 
-              ? 'linear-gradient(45deg, #424242 25%, transparent 25%), linear-gradient(-45deg, #424242 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #424242 75%), linear-gradient(-45deg, transparent 75%, #424242 75%)'
-              : 'radial-gradient(circle, rgba(76,175,80,0.1) 0%, rgba(33,150,243,0.05) 100%)',
-            backgroundSize: camera.status === 'offline' ? '20px 20px' : 'auto',
-            backgroundPosition: camera.status === 'offline' ? '0 0, 0 10px, 10px -10px, -10px 0px' : 'center',
-          }}
-        >
-          {camera.status === 'offline' ? (
-            <VideocamOffIcon sx={{ fontSize: 48, color: 'error.main' }} />
-          ) : (
-            <Box sx={{ textAlign: 'center' }}>
-              <VideocamIcon sx={{ fontSize: 48, color: 'primary.main', mb: 1 }} />
-              <Typography variant="caption" sx={{ color: 'white' }}>
-                Live Feed
-              </Typography>
-            </Box>
-          )}
-          
-          {/* Status Badge */}
-          <Box sx={{ position: 'absolute', top: 8, left: 8 }}>
-            <Chip 
-              icon={getStatusIcon(camera.status)}
-              label={camera.status.toUpperCase()}
-              color={getStatusColor(camera.status) as any}
-              size="small"
-              sx={{ fontSize: '0.7rem' }}
-            />
+    <Card 
+      elevation={0}
+      sx={{ 
+        borderRadius: 1,
+        border: '1px solid',
+        borderColor: colors.neutral[200],
+        height: '100%',
+        position: 'relative'
+      }}
+    >
+      {/* Video Feed Area */}
+      <Box 
+        sx={{ 
+          height: 200, 
+          bgcolor: colors.neutral[900], 
+          position: 'relative',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundImage: 'linear-gradient(45deg, #424242 25%, transparent 25%), linear-gradient(-45deg, #424242 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #424242 75%), linear-gradient(-45deg, transparent 75%, #424242 75%)',
+          backgroundSize: '20px 20px',
+          backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px',
+        }}
+      >
+        <Box sx={{ textAlign: 'center' }}>
+          <VideocamOffIcon sx={{ fontSize: 48, color: 'rgba(255, 152, 0, 0.8)', mb: 1 }} />
+          <Typography variant="body2" sx={{ color: 'white', fontSize: '0.875rem' }}>
+            camera offline
+          </Typography>
+        </Box>
+        
+        {/* Status Badge */}
+        <Box sx={{ position: 'absolute', top: 8, left: 8 }}>
+          <Chip 
+            icon={<WarningIcon sx={{ fontSize: 14, color: 'rgba(255, 152, 0, 0.8)' }} />}
+            label="OFFLINE"
+            sx={{ 
+              fontSize: '0.75rem', 
+              backgroundColor: 'rgba(255, 152, 0, 0.1)',
+              color: 'rgba(255, 152, 0, 0.9)',
+              border: '1px solid rgba(255, 152, 0, 0.3)'
+            }}
+            size="small"
+          />
+        </Box>
+
+        {/* Battery Level */}
+        <Box sx={{ position: 'absolute', bottom: 8, left: 8 }}>
+          <Chip 
+            label="15%"
+            size="small"
+            sx={{ 
+              fontSize: '0.75rem',
+              backgroundColor: 'rgba(244, 67, 54, 0.1)',
+              color: 'rgba(244, 67, 54, 0.9)',
+              border: '1px solid rgba(244, 67, 54, 0.3)'
+            }}
+          />
+        </Box>
+      </Box>
+
+      <CardContent sx={{ p: 3 }}>
+        {/* Header */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 500, mb: 0.5, fontSize: '1rem', lineHeight: 1.5 }}>
+              {camera.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem', lineHeight: 1.5, mb: 1 }}>
+              {camera.location}
+            </Typography>
+            <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
+              {camera.resolution} • {camera.nightVision ? 'night vision' : 'day only'}
+            </Typography>
           </Box>
-
-          {/* Recording Indicator */}
-          {camera.recording && camera.status !== 'offline' && (
-            <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
-              <Badge color="error" variant="dot">
-                <RecordIcon sx={{ color: 'white', fontSize: 20 }} />
-              </Badge>
-            </Box>
-          )}
-
-          {/* Battery Level */}
-          {camera.battery !== undefined && (
-            <Box sx={{ position: 'absolute', bottom: 8, left: 8 }}>
-              <Chip 
-                label={`${camera.battery}%`}
-                size="small"
-                color={camera.battery < 20 ? 'error' : camera.battery < 50 ? 'warning' : 'success'}
-                sx={{ fontSize: '0.7rem' }}
-              />
-            </Box>
-          )}
-
-          {/* Fullscreen Button */}
-          <IconButton
-            sx={{ position: 'absolute', bottom: 8, right: 8, color: 'white' }}
-            onClick={() => setFullscreenCamera(camera)}
-            disabled={camera.status === 'offline'}
-          >
-            <FullscreenIcon />
+          <IconButton size="small" onClick={(e) => handleMenuClick(e, camera)}>
+            <MoreVertIcon sx={{ fontSize: 18 }} />
           </IconButton>
         </Box>
 
-        <CardContent>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
-                {camera.name}
+        {/* Metrics */}
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={6}>
+            <Box sx={{ textAlign: 'center', p: 2, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
+              <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 500, color: colors.neutral[700] }}>
+                15%
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                {camera.location}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                {camera.resolution} • {camera.nightVision ? 'Night Vision' : 'Day Only'}
-              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>battery</Typography>
             </Box>
-            <IconButton 
-              size="small"
-              onClick={(e) => handleMenuClick(e, camera)}
-            >
-              <MoreVertIcon />
-            </IconButton>
-          </Box>
-
-          {camera.lastMotion && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Last Motion: {new Date(camera.lastMotion).toLocaleTimeString()}
+          </Grid>
+          <Grid item xs={6}>
+            <Box sx={{ textAlign: 'center', p: 2, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
+              <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 500, color: colors.neutral[700] }}>
+                0
               </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>events</Typography>
             </Box>
-          )}
+          </Grid>
+        </Grid>
 
-          <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-            <Button
-              size="small"
-              variant="outlined"
-              color="warning"
-              onClick={() => simulateMotionDetection(camera)}
-              startIcon={<AlertIcon />}
-              disabled={camera.status === 'offline'}
-            >
-              Test Motion
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
-    </motion.div>
+        {/* Action Button */}
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<WarningIcon sx={{ fontSize: 16 }} />}
+            disabled
+            fullWidth
+            sx={{ 
+              py: 1.5,
+              fontSize: '0.875rem',
+              textTransform: 'none',
+              borderRadius: 1,
+              borderColor: colors.neutral[300],
+              color: colors.neutral[500],
+            }}
+          >
+            probe disconnected - no feed
+          </Button>
+        </Box>
+
+        {/* Status Info */}
+        <Box sx={{ mt: 2, pt: 2, borderTop: `1px solid ${colors.neutral[200]}` }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+            last motion: 3.12.2025 14:37 • camera offline 2 days ago
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
   );
 
   const TabPanel = ({ children, value, index }: any) => (
@@ -371,104 +348,136 @@ const SecurityCamera: React.FC = () => {
   const unacknowledgedAlerts = alerts.filter(alert => !alert.acknowledged);
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={animationVariants.stagger}
-      style={{ paddingBottom: '80px' }}
-    >
+    <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', padding: '16px' }}>
+      {/* Compact Header */}
       <Box sx={{ mb: 3 }}>
-        <Box sx={{ 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: { xs: 'flex-start', sm: 'center' },
-          flexDirection: { xs: 'column', sm: 'row' },
-          gap: 2,
-          mb: 1 
-        }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, fontSize: { xs: '1.75rem', sm: '2.125rem' } }}>
-            Security System
-          </Typography>
-          <Badge badgeContent={unacknowledgedAlerts.length} color="error">
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 500, fontSize: '1.25rem', lineHeight: 1.4 }}>
+              newgen iedc security • 1 camera
+            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+              offline • probe disconnected • no recording
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1 }}>
             <Button 
-              variant="outlined" 
-              startIcon={<AlertIcon />}
               size="small"
+              variant="outlined"
+              onClick={testMotionAlert}
+              startIcon={<SecurityIcon sx={{ fontSize: 16 }} />}
+              sx={{
+                fontSize: '0.875rem',
+                textTransform: 'none',
+                borderRadius: 1,
+                borderColor: colors.neutral[300],
+                color: colors.neutral[700]
+              }}
             >
-              Alerts
+              test motion
             </Button>
-          </Badge>
+            <Badge badgeContent={unacknowledgedAlerts.length} color="error">
+              <Button 
+                size="small"
+                variant="outlined"
+                startIcon={<AlertIcon sx={{ fontSize: 16 }} />}
+                sx={{
+                  fontSize: '0.875rem',
+                  textTransform: 'none',
+                  borderRadius: 1,
+                  borderColor: colors.neutral[300],
+                  color: colors.neutral[700]
+                }}
+              >
+                alerts
+              </Button>
+            </Badge>
+          </Box>
         </Box>
-        <Typography variant="body1" color="text.secondary">
-          Monitor your agricultural site with live camera feeds and security alerts
-        </Typography>
+
+        {/* Compact Security Metrics */}
+        <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200], p: 2 }}>
+          <Grid container spacing={3} alignItems="center">
+            <Grid item xs={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <WarningIcon sx={{ fontSize: 18, color: 'rgba(255, 152, 0, 0.8)' }} />
+                <Box>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 500, color: 'rgba(255, 152, 0, 0.9)' }}>offline</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>status</Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <VideocamOffIcon sx={{ fontSize: 18, color: colors.neutral[600] }} />
+                <Box>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>no feed</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>video</Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <RecordIcon sx={{ fontSize: 18, color: colors.neutral[600] }} />
+                <Box>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>0 events</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>today</Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <WarningIcon sx={{ fontSize: 18, color: colors.neutral[600] }} />
+                <Box>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>15%</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>battery</Typography>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </Card>
       </Box>
 
-      {/* System Status */}
-      <motion.div variants={animationVariants.fadeIn}>
-        <Alert 
-          severity={cameras.filter(c => c.status === 'offline').length > 0 ? 'warning' : 'success'} 
-          sx={{ mb: 3 }}
-        >
-          <Typography variant="body2">
-            System Status: {cameras.filter(c => c.status !== 'offline').length} of {cameras.length} cameras online
-            {cameras.filter(c => c.recording).length > 0 && 
-              ` • ${cameras.filter(c => c.recording).length} cameras recording`}
-          </Typography>
-        </Alert>
-      </motion.div>
 
-      {/* Tabs */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+
+      {/* Navigation Tabs */}
+      <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200], mb: 3 }}>
         <Tabs 
           value={activeTab} 
           onChange={handleTabChange}
-          variant="scrollable"
-          scrollButtons="auto"
-          sx={{
-            '& .MuiTab-root': {
-              minWidth: { xs: 'auto', sm: 160 },
-              fontSize: { xs: '0.875rem', sm: '1rem' }
+          sx={{ 
+            '& .MuiTab-root': { 
+              textTransform: 'none', 
+              fontSize: '0.875rem',
+              color: colors.neutral[600],
+              '&.Mui-selected': { color: colors.neutral[800] }
             }
           }}
         >
+          <Tab label="camera" />
           <Tab 
             label={(
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                Camera Feeds
-                {cameras.filter(c => c.status === 'recording').length > 0 && (
-                  <Badge 
-                    badgeContent={cameras.filter(c => c.status === 'recording').length} 
-                    color="error" 
-                    sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', minWidth: 16, height: 16 } }}
-                  />
-                )}
-              </Box>
-            )}
-          />
-          <Tab 
-            label={(
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                Alerts
+                alerts
                 {unacknowledgedAlerts.length > 0 && (
                   <Badge 
                     badgeContent={unacknowledgedAlerts.length} 
                     color="error" 
-                    sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', minWidth: 16, height: 16 } }}
+                    sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', minWidth: 12, height: 12 } }}
                   />
                 )}
               </Box>
             )}
           />
-          <Tab label="Recordings" />
+          <Tab label="recordings" />
         </Tabs>
-      </Box>
+      </Card>
 
       {/* Camera Feeds Tab */}
       <TabPanel value={activeTab} index={0}>
-        <Grid container spacing={{ xs: 2, sm: 3 }}>
+        <Grid container spacing={3}>
           {cameras.map((camera) => (
-            <Grid item xs={12} sm={6} lg={4} key={camera.id}>
+            <Grid item xs={12} key={camera.id}>
               <CameraCard camera={camera} />
             </Grid>
           ))}
@@ -477,93 +486,120 @@ const SecurityCamera: React.FC = () => {
 
       {/* Alerts Tab */}
       <TabPanel value={activeTab} index={1}>
-        <motion.div variants={animationVariants.fadeIn}>
-          <Typography variant="h6" sx={{ mb: 3 }}>Security Alerts</Typography>
-          <Card>
-            <CardContent sx={{ p: 0 }}>
-              <List>
-                {alerts.map((alert, index) => (
-                  <React.Fragment key={alert.id}>
-                    <ListItem sx={{ opacity: alert.acknowledged ? 0.6 : 1 }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
-                        <Chip
-                          icon={getAlertIcon(alert.type)}
-                          label={alert.type.replace('_', ' ').toUpperCase()}
-                          color={getSeverityColor(alert.severity) as any}
-                          size="small"
-                        />
-                      </Box>
-                      <ListItemText
-                        primary={`${alert.camera} - ${alert.type.replace('_', ' ')}`}
-                        secondary={new Date(alert.timestamp).toLocaleString()}
+        <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+          <CardContent sx={{ p: 0 }}>
+            <Box sx={{ p: 3, borderBottom: `1px solid ${colors.neutral[200]}` }}>
+              <Typography variant="h6" sx={{ fontWeight: 500, fontSize: '1rem' }}>
+                security alerts
+              </Typography>
+            </Box>
+            <List sx={{ py: 0 }}>
+              {alerts.map((alert, index) => (
+                <React.Fragment key={alert.id}>
+                  <ListItem sx={{ py: 3, opacity: alert.acknowledged ? 0.6 : 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
+                      <Chip
+                        icon={getAlertIcon(alert.type)}
+                        label={alert.type.replace('_', ' ')}
+                        sx={{
+                          fontSize: '0.75rem',
+                          backgroundColor: alert.severity === 'high' ? 'rgba(244, 67, 54, 0.1)' : colors.neutral[100],
+                          color: alert.severity === 'high' ? 'rgba(244, 67, 54, 0.9)' : colors.neutral[700],
+                          border: `1px solid ${alert.severity === 'high' ? 'rgba(244, 67, 54, 0.3)' : colors.neutral[300]}`
+                        }}
+                        size="small"
                       />
-                      <ListItemSecondaryAction>
-                        {!alert.acknowledged && (
-                          <Button size="small" variant="outlined">
-                            Acknowledge
-                          </Button>
-                        )}
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                    {index < alerts.length - 1 && <Divider />}
-                  </React.Fragment>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
-        </motion.div>
+                    </Box>
+                    <ListItemText
+                      primary={
+                        <Typography variant="body1" sx={{ fontWeight: 500, fontSize: '0.875rem', lineHeight: 1.5 }}>
+                          {alert.camera} • {alert.type.replace('_', ' ')}
+                        </Typography>
+                      }
+                      secondary={
+                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
+                          {new Date(alert.timestamp).toLocaleString()}
+                        </Typography>
+                      }
+                    />
+                    <ListItemSecondaryAction>
+                      {!alert.acknowledged && (
+                        <Button 
+                          size="small" 
+                          variant="outlined"
+                          sx={{
+                            fontSize: '0.75rem',
+                            textTransform: 'none',
+                            borderRadius: 1,
+                            borderColor: colors.neutral[300],
+                            color: colors.neutral[700]
+                          }}
+                        >
+                          acknowledge
+                        </Button>
+                      )}
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                  {index < alerts.length - 1 && <Divider sx={{ borderColor: colors.neutral[200] }} />}
+                </React.Fragment>
+              ))}
+            </List>
+          </CardContent>
+        </Card>
       </TabPanel>
 
       {/* Recordings Tab */}
       <TabPanel value={activeTab} index={2}>
-        <motion.div variants={animationVariants.fadeIn}>
-          <Typography variant="h6" sx={{ mb: 3 }}>Recorded Events</Typography>
-          <Grid container spacing={{ xs: 2, sm: 3 }}>
-            <Grid item xs={12} sm={6} md={4}>
-              <Card>
-                <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
-                    Today's Recordings
-                  </Typography>
-                  <Typography variant="h4" color="primary" sx={{ mb: 1 }}>
-                    24
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Motion-triggered events
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Card>
-                <CardContent>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-                    Storage Used
-                  </Typography>
-                  <Typography variant="h4" color="warning.main" sx={{ mb: 1 }}>
-                    78%
-                  </Typography>
-                  <LinearProgress variant="determinate" value={78} sx={{ mt: 1 }} />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <Card>
-                <CardContent>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
-                    Oldest Recording
-                  </Typography>
-                  <Typography variant="h4" color="info.main" sx={{ mb: 1 }}>
-                    7d
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Auto-cleanup after 30 days
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+              <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: colors.neutral[700] }}>
+                  0
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  today's recordings
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
-        </motion.div>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+              <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: colors.neutral[700] }}>
+                  0%
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  storage used
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+              <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: colors.neutral[700] }}>
+                  none
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  oldest recording
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+              <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: 'rgba(255, 152, 0, 0.8)' }}>
+                  offline
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  2 days ago
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </TabPanel>
 
       {/* Camera Menu */}
@@ -638,7 +674,7 @@ const SecurityCamera: React.FC = () => {
           🚨 {motionAlert.message} - {motionAlert.camera}
         </Alert>
       </Snackbar>
-    </motion.div>
+    </div>
   );
 };
 

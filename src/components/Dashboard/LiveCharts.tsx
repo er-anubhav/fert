@@ -4,11 +4,14 @@ import {
   CardContent,
   Typography,
   Box,
-  Tabs,
-  Tab,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
   IconButton,
   Tooltip,
   useTheme,
+  Chip,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
@@ -58,26 +61,37 @@ const generateMockData = (days: number = 7) => {
 
 const mockData = generateMockData(7);
 
-interface TabPanelProps {
+interface ChartPanelProps {
   children?: React.ReactNode;
-  index: number;
-  value: number;
+  chartType: string;
+  activeChart: string;
 }
 
-const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
+const ChartPanel: React.FC<ChartPanelProps> = ({ children, chartType, activeChart }) => {
   return (
-    <div role="tabpanel" hidden={value !== index}>
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
+    <div style={{ display: chartType === activeChart ? 'block' : 'none' }}>
+      <Box sx={{ mt: 0 }}>{children}</Box>
     </div>
   );
 };
 
+const chartOptions = [
+  { value: 'moisture', label: 'Moisture & Climate', icon: '💧' },
+  { value: 'npk', label: 'NPK Nutrients', icon: '🌱' },
+  { value: 'ph', label: 'pH & Trends', icon: '⚖️' },
+  { value: 'nutrients', label: 'Micro/Macro Nutrients', icon: '🧪' },
+];
+
 const LiveCharts: React.FC = () => {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeChart, setActiveChart] = useState('moisture');
   const theme = useTheme();
 
-  const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
+  const handleChartChange = (event: any) => {
+    setActiveChart(event.target.value);
+  };
+
+  const getActiveChartInfo = () => {
+    return chartOptions.find(option => option.value === activeChart) || chartOptions[0];
   };
 
   const formatTooltipValue = (value: number, name: string) => {
@@ -160,125 +174,133 @@ const LiveCharts: React.FC = () => {
 
   return (
     <Card sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
-      <CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-            Live Sensor Data
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="Refresh Data">
-              <IconButton size="small">
-                <RefreshIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Fullscreen">
-              <IconButton size="small">
-                <FullscreenIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Export Data">
-              <IconButton size="small">
-                <DownloadIcon />
-              </IconButton>
-            </Tooltip>
+      <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+        <Box sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          flexWrap: 'wrap',
+          gap: 2,
+          mb: 3,
+          p: 3,
+          pb: 0
+        }}>
+          
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Chart Type</InputLabel>
+              <Select
+                value={activeChart}
+                onChange={handleChartChange}
+                label="Chart Type"
+                sx={{ 
+                  borderRadius: 2,
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: colors.primary[300],
+                  },
+                  '&:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: colors.primary[400],
+                  },
+                  '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: colors.primary[500],
+                  },
+                }}
+              >
+                {chartOptions.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <span>{option.icon}</span>
+                      <span>{option.label}</span>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            
+            <Box sx={{ display: 'flex', gap: 0.5 }}>
+              <Tooltip title="Refresh Data">
+                <IconButton 
+                  size="small"
+                  sx={{ 
+                    backgroundColor: colors.neutral[100],
+                    '&:hover': { backgroundColor: colors.neutral[200] },
+                    borderRadius: 1.5,
+                  }}
+                >
+                  <RefreshIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Fullscreen">
+                <IconButton 
+                  size="small"
+                  sx={{ 
+                    backgroundColor: colors.neutral[100],
+                    '&:hover': { backgroundColor: colors.neutral[200] },
+                    borderRadius: 1.5,
+                  }}
+                >
+                  <FullscreenIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Export Data">
+                <IconButton 
+                  size="small"
+                  sx={{ 
+                    backgroundColor: colors.neutral[100],
+                    '&:hover': { backgroundColor: colors.neutral[200] },
+                    borderRadius: 1.5,
+                  }}
+                >
+                  <DownloadIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
         </Box>
 
-        <Tabs 
-          value={activeTab} 
-          onChange={handleTabChange}
-          sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}
-        >
-          <Tab label="Moisture & Climate" />
-          <Tab label="NPK Nutrients" />
-          <Tab label="pH & Trends" />
-          <Tab label="Micro/Macro Nutrients" />
-        </Tabs>
-
-        {/* Moisture & Climate Tab */}
-        <TabPanel value={activeTab} index={0}>
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3, width: '100%' }}>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Box sx={{ height: 300 }}>
-                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                  Soil Moisture (Last 7 Days)
-                </Typography>
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <AreaChart data={mockData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
-                    <XAxis 
-                      dataKey="timestamp" 
-                      stroke={colors.neutral[600]}
-                      fontSize={12}
-                      tickFormatter={(value) => format(new Date(value), 'MM/dd')}
-                    />
-                    <YAxis 
-                      stroke={colors.neutral[600]}
-                      fontSize={12}
-                      domain={[0, 100]}
-                    />
-                    <RechartsTooltip content={<CustomTooltip />} />
-                    <Area
-                      type="monotone"
-                      dataKey="soilMoisture"
-                      stroke={colors.sensor.moisture}
-                      fill={`${colors.sensor.moisture}40`}
-                      strokeWidth={2}
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </Box>
-            </Box>
-            
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Box sx={{ height: 300 }}>
-                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                  Temperature & Humidity
-                </Typography>
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <LineChart data={mockData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
-                    <XAxis 
-                      dataKey="timestamp" 
-                      stroke={colors.neutral[600]}
-                      fontSize={12}
-                      tickFormatter={(value) => format(new Date(value), 'HH:mm')}
-                    />
-                    <YAxis 
-                      stroke={colors.neutral[600]}
-                      fontSize={12}
-                    />
-                    <RechartsTooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="temperature"
-                      stroke={colors.sensor.temperature}
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="humidity"
-                      stroke={colors.sensor.humidity}
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Box>
+        {/* Moisture & Climate Chart */}
+        <ChartPanel chartType="moisture" activeChart={activeChart}>
+          <Box sx={{ width: '100%', pl: 0, pr: 0 }}>
+            <Box sx={{ height: 200,mb: 6 , width: '100%' }}>
+              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 200, pl: 3 }}>
+                Soil Moisture (Last 7 Days)
+              </Typography>
+              <ResponsiveContainer width="95%" height="100%" minWidth={0}>
+                <AreaChart data={mockData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
+                  <XAxis 
+                    dataKey="timestamp" 
+                    stroke={colors.neutral[600]}
+                    fontSize={12}
+                    tickFormatter={(value) => format(new Date(value), 'MM/dd')}
+                  />
+                  <YAxis 
+                    stroke={colors.neutral[600]}
+                    fontSize={12}
+                    domain={[0, 100]}
+                  />
+                  <RechartsTooltip content={<CustomTooltip />} />
+                  <Area
+                    type="monotone"
+                    dataKey="soilMoisture"
+                    stroke={colors.sensor.moisture}
+                    fill={`${colors.sensor.moisture}40`}
+                    strokeWidth={2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </Box>
           </Box>
-        </TabPanel>
+        </ChartPanel>
 
-        {/* NPK Nutrients Tab */}
-        <TabPanel value={activeTab} index={1}>
-          <Box sx={{ height: 400 }}>
-            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
+        {/* NPK Nutrients Chart */}
+        <ChartPanel chartType="npk" activeChart={activeChart}>
+          <Box sx={{  height: 200,mb: 6 , width: '100%' }}>
+            <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, pl: 3 }}>
               N-P-K Trinity Graph (Last 7 Days)
             </Typography>
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <LineChart data={mockData}>
+            <ResponsiveContainer width="95%" height="100%" minWidth={0}>
+              <LineChart data={mockData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
                 <XAxis 
                   dataKey="timestamp" 
@@ -320,175 +342,96 @@ const LiveCharts: React.FC = () => {
               </LineChart>
             </ResponsiveContainer>
           </Box>
-        </TabPanel>
+        </ChartPanel>
 
-        {/* pH & Trends Tab */}
-        <TabPanel value={activeTab} index={2}>
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3, width: '100%' }}>
-            <Box sx={{ flex: 2, minWidth: 0 }}>
-              <Box sx={{ height: 300 }}>
-                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                  pH Level Trends
-                </Typography>
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <LineChart data={mockData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
-                    <XAxis 
-                      dataKey="timestamp" 
-                      stroke={colors.neutral[600]}
-                      fontSize={12}
-                      tickFormatter={(value) => format(new Date(value), 'HH:mm')}
-                    />
-                    <YAxis 
-                      stroke={colors.neutral[600]}
-                      fontSize={12}
-                      domain={[6, 8]}
-                    />
-                    <RechartsTooltip content={<CustomTooltip />} />
-                    <Line
-                      type="monotone"
-                      dataKey="pH"
-                      stroke={colors.sensor.pH}
-                      strokeWidth={3}
-                      dot={{ fill: colors.sensor.pH, strokeWidth: 2, r: 3 }}
-                    />
-                    {/* pH optimal range indicators */}
-                    <Line
-                      type="monotone"
-                      data={mockData.map(d => ({ ...d, optimal_min: 6.0 }))}
-                      dataKey="optimal_min"
-                      stroke={colors.status.success}
-                      strokeDasharray="5 5"
-                      strokeWidth={1}
-                      dot={false}
-                    />
-                    <Line
-                      type="monotone"
-                      data={mockData.map(d => ({ ...d, optimal_max: 7.5 }))}
-                      dataKey="optimal_max"
-                      stroke={colors.status.success}
-                      strokeDasharray="5 5"
-                      strokeWidth={1}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </Box>
-            </Box>
-            
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Box
-                sx={{
-                  p: 3,
-                  backgroundColor: colors.primary[50],
-                  borderRadius: 2,
-                  border: '1px solid',
-                  borderColor: colors.primary[200],
-                  height: 'fit-content'
-                }}
-              >
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>
-                  pH Status
-                </Typography>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h2" sx={{ fontWeight: 700, color: colors.primary[600] }}>
-                    6.8
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Current pH Level
-                  </Typography>
-                  <Box
-                    sx={{
-                      width: '100%',
-                      height: 8,
-                      borderRadius: 4,
-                      background: `linear-gradient(to right, ${colors.status.error} 0%, ${colors.status.warning} 30%, ${colors.status.success} 50%, ${colors.status.warning} 70%, ${colors.status.error} 100%)`,
-                      position: 'relative',
-                      mb: 1,
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        position: 'absolute',
-                        top: -2,
-                        left: '68%', // 6.8 on pH scale
-                        width: 4,
-                        height: 12,
-                        backgroundColor: 'white',
-                        border: '2px solid',
-                        borderColor: colors.primary[600],
-                        borderRadius: 1,
-                      }}
-                    />
-                  </Box>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                    <Typography variant="caption">5.0</Typography>
-                    <Typography variant="caption">7.0</Typography>
-                    <Typography variant="caption">9.0</Typography>
-                  </Box>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: colors.status.success }}>
-                    Optimal Range
-                  </Typography>
-                </Box>
-              </Box>
+        {/* pH & Trends Chart */}
+        <ChartPanel chartType="ph" activeChart={activeChart}>
+          <Box sx={{ width: '100%', pl: 0, pr: 0 }}>
+            <Box sx={{ height: 200,mb: 6 , width: '100%'  }}>
+              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, pl: 3 }}>
+                pH Level Trends
+              </Typography>
+              <ResponsiveContainer width="70%" height="100%" minWidth={0}>
+                <LineChart data={mockData} margin={{ top: 5, right: 5, left: 15, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
+                  <XAxis 
+                    dataKey="timestamp" 
+                    stroke={colors.neutral[600]}
+                    fontSize={12}
+                    tickFormatter={(value) => format(new Date(value), 'HH:mm')}
+                    interval="preserveStartEnd"
+                  />
+                  <YAxis 
+                    stroke={colors.neutral[600]}
+                    fontSize={12}
+                    domain={[6, 8]}
+                  />
+                  <RechartsTooltip content={<CustomTooltip />} />
+                  <Line
+                    type="monotone"
+                    dataKey="pH"
+                    stroke={colors.sensor.pH}
+                    strokeWidth={1}
+                    dot={{ fill: colors.sensor.pH, strokeWidth: 1, r: 0.5 }}
+                  />
+                  {/* pH optimal range indicators */}
+                  <Line
+                    type="monotone"
+                    data={mockData.map(d => ({ ...d, optimal_min: 6.0 }))}
+                    dataKey="optimal_min"
+                    stroke={colors.status.success}
+                    strokeDasharray="5 5"
+                    strokeWidth={1}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    data={mockData.map(d => ({ ...d, optimal_max: 7.5 }))}
+                    dataKey="optimal_max"
+                    stroke={colors.status.success}
+                    strokeDasharray="5 5"
+                    strokeWidth={1}
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </Box>
           </Box>
-        </TabPanel>
+        </ChartPanel>
 
-        {/* Micro/Macro Nutrients Tab */}
-        <TabPanel value={activeTab} index={3}>
-          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3, width: '100%' }}>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Box sx={{ height: 300 }}>
-                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                  Micronutrient Levels
-                </Typography>
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <BarChart
-                    data={[
-                      { name: 'Iron', value: 12.5, optimal: 15 },
-                      { name: 'Zinc', value: 8.2, optimal: 10 },
-                      { name: 'Manganese', value: 15.8, optimal: 18 },
-                      { name: 'Copper', value: 3.1, optimal: 4 },
-                      { name: 'Boron', value: 0.8, optimal: 1.2 },
-                    ]}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
-                    <XAxis dataKey="name" stroke={colors.neutral[600]} fontSize={12} />
-                    <YAxis stroke={colors.neutral[600]} fontSize={12} />
-                    <RechartsTooltip />
-                    <Bar dataKey="value" fill={colors.secondary[500]} />
-                    <Bar dataKey="optimal" fill={colors.neutral[300]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Box>
-            </Box>
-            
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Box sx={{ height: 300 }}>
-                <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600 }}>
-                  Macronutrient Balance
-                </Typography>
-                <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-                  <BarChart
-                    data={[
-                      { name: 'Calcium', value: 85, optimal: 90 },
-                      { name: 'Magnesium', value: 22, optimal: 25 },
-                      { name: 'Sulfur', value: 18, optimal: 20 },
-                    ]}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
-                    <XAxis dataKey="name" stroke={colors.neutral[600]} fontSize={12} />
-                    <YAxis stroke={colors.neutral[600]} fontSize={12} />
-                    <RechartsTooltip />
-                    <Bar dataKey="value" fill={colors.primary[500]} />
-                    <Bar dataKey="optimal" fill={colors.neutral[300]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </Box>
+        {/* Micro/Macro Nutrients Chart */}
+        <ChartPanel chartType="nutrients" activeChart={activeChart}>
+          <Box sx={{ width: '100%', pl: 0, pr: 0 }}>
+            <Box sx={{  height: 200,mb: 6 , width: '100%'  }}>
+              <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 600, pl: 3 }}>
+                Nutrient Levels (Current vs Optimal)
+              </Typography>
+              <ResponsiveContainer width="95%" height="100%" minWidth={0}>
+                <BarChart
+                  data={[
+                    { name: 'Iron', value: 12.5, optimal: 15 },
+                    { name: 'Zinc', value: 8.2, optimal: 10 },
+                    { name: 'Manganese', value: 15.8, optimal: 18 },
+                    { name: 'Copper', value: 3.1, optimal: 4 },
+                    { name: 'Boron', value: 0.8, optimal: 1.2 },
+                    { name: 'Calcium', value: 85, optimal: 90 },
+                    { name: 'Magnesium', value: 22, optimal: 25 },
+                    { name: 'Sulfur', value: 18, optimal: 20 },
+                  ]}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke={colors.neutral[200]} />
+                  <XAxis dataKey="name" stroke={colors.neutral[600]} fontSize={12} />
+                  <YAxis stroke={colors.neutral[600]} fontSize={12} />
+                  <RechartsTooltip />
+                  <Legend />
+                  <Bar dataKey="value" fill={colors.secondary[500]} name="Current" />
+                  <Bar dataKey="optimal" fill={colors.neutral[300]} name="Optimal" />
+                </BarChart>
+              </ResponsiveContainer>
             </Box>
           </Box>
-        </TabPanel>
+        </ChartPanel>
       </CardContent>
     </Card>
   );

@@ -14,6 +14,7 @@ import {
   Switch,
   IconButton,
   Badge,
+  Grid,
 } from '@mui/material';
 import {
   Person as PersonIcon,
@@ -29,276 +30,354 @@ import {
   Phone as PhoneIcon,
   Email as EmailIcon,
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { colors } from '../../utils/theme';
 
-const animationVariants = {
-  fadeIn: {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  },
-  stagger: {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  },
-};
+
 
 const Profile: React.FC = () => {
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={animationVariants.stagger}
-    >
-      <Box sx={{ maxWidth: 600, mx: 'auto', px: { xs: 2, sm: 0 }, pb: { xs: 10, sm: 4 } }}>
+    <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', padding: '16px' }}>
+      <Box sx={{ maxWidth: 600, mx: 'auto' }}>
         {/* Profile Header */}
-        <motion.div variants={animationVariants.fadeIn}>
-          <Card sx={{ mb: 3 }}>
-            <CardContent sx={{ textAlign: 'center', py: { xs: 3, sm: 4 }, px: { xs: 2, sm: 3 } }}>
-              <Box sx={{ position: 'relative', display: 'inline-block', mb: 2 }}>
-                <Avatar
-                  sx={{
-                    width: { xs: 80, sm: 100 },
-                    height: { xs: 80, sm: 100 },
-                    bgcolor: 'primary.main',
-                    fontSize: { xs: '2rem', sm: '2.5rem' },
-                  }}
-                >
-                  <PersonIcon sx={{ fontSize: '3rem' }} />
-                </Avatar>
-                <IconButton
-                  sx={{
-                    position: 'absolute',
-                    bottom: 0,
-                    right: 0,
-                    bgcolor: 'background.paper',
-                    border: 2,
-                    borderColor: 'primary.main',
-                    '&:hover': { bgcolor: 'grey.100' },
-                  }}
-                  size="small"
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
-              </Box>
-              
-              <Typography variant="h5" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '1.25rem', sm: '1.5rem' } }}>
-                John Farmer
-              </Typography>
-              
-              <Box sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center', 
-                flexDirection: { xs: 'column', sm: 'row' },
-                gap: 1, 
-                mb: 2 
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <SensorsIcon sx={{ color: 'primary.main', fontSize: 20 }} />
-                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: { xs: '0.875rem', sm: '0.875rem' } }}>
-                    Farm Administrator • FertoBot Pro
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 2 }}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                    12
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Active Probes
-                  </Typography>
-                </Box>
-                <Divider orientation="vertical" flexItem />
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: 'success.main' }}>
-                    5.2
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Hectares
-                  </Typography>
-                </Box>
-                <Divider orientation="vertical" flexItem />
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: 'warning.main' }}>
-                    847
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Days Active
-                  </Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Contact Information */}
-        <motion.div variants={animationVariants.fadeIn}>
-          <Card sx={{ mb: 3 }}>
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                Contact Information
-              </Typography>
-              
-              <List dense sx={{ '& .MuiListItem-root': { py: { xs: 1, sm: 1.5 } } }}>
-                <ListItem>
-                  <ListItemIcon>
-                    <EmailIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="john.farmer@fertobot.com"
-                    secondary="Primary Email"
-                  />
-                  <IconButton size="small">
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </ListItem>
-                
-                <ListItem>
-                  <ListItemIcon>
-                    <PhoneIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="+1 (555) 123-4567"
-                    secondary="Mobile Phone"
-                  />
-                  <IconButton size="small">
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </ListItem>
-              </List>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Settings & Preferences */}
-        <motion.div variants={animationVariants.fadeIn}>
-          <Card sx={{ mb: 3 }}>
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, fontSize: { xs: '1rem', sm: '1.25rem' } }}>
-                Settings & Preferences
-              </Typography>
-              
-              <List sx={{ '& .MuiListItem-root': { py: { xs: 1, sm: 1.5 } } }}>
-                <ListItem>
-                  <ListItemIcon>
-                    <NotificationsIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Push Notifications"
-                    secondary="Get alerts for probe status changes"
-                  />
-                  <Switch defaultChecked />
-                </ListItem>
-                
-                <ListItem>
-                  <ListItemIcon>
-                    <Badge badgeContent={4} color="error">
-                      <BadgeIcon />
-                    </Badge>
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Alert Badges"
-                    secondary="Show notification counts on icons"
-                  />
-                  <Switch defaultChecked />
-                </ListItem>
-
-                <ListItem>
-                  <ListItemIcon>
-                    <LanguageIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Language"
-                    secondary="English (US)"
-                  />
-                  <IconButton size="small">
-                    <EditIcon fontSize="small" />
-                  </IconButton>
-                </ListItem>
-              </List>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Account Actions */}
-        <motion.div variants={animationVariants.fadeIn}>
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                Account
-              </Typography>
-              
-              <List>
-                <ListItem button>
-                  <ListItemIcon>
-                    <SecurityIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Security & Privacy"
-                    secondary="Password, 2FA, data privacy"
-                  />
-                </ListItem>
-                
-                <ListItem button>
-                  <ListItemIcon>
-                    <HelpIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Help & Support"
-                    secondary="Documentation, FAQs, contact support"
-                  />
-                </ListItem>
-
-                <Divider sx={{ my: 1 }} />
-                
-                <ListItem button sx={{ color: 'error.main' }}>
-                  <ListItemIcon sx={{ color: 'inherit' }}>
-                    <LogoutIcon />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Sign Out"
-                    secondary="Log out of your FertoBot account"
-                  />
-                </ListItem>
-              </List>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* App Information */}
-        <motion.div variants={animationVariants.fadeIn}>
-          <Box sx={{ textAlign: 'center', py: { xs: 2, sm: 3 }, px: { xs: 1, sm: 0 } }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
-              <Box
+        <Card elevation={0} sx={{ mb: 3, borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+          <CardContent sx={{ textAlign: 'center', py: 3, px: 3 }}>
+            <Box sx={{ position: 'relative', display: 'inline-block', mb: 2 }}>
+              <Avatar
                 sx={{
-                  width: { xs: 20, sm: 24 },
-                  height: 24,
-                  borderRadius: 1,
-                  background: 'linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  width: 80,
+                  height: 80,
+                  bgcolor: colors.neutral[600],
+                  fontSize: '2rem',
                 }}
               >
-                <SensorsIcon sx={{ color: 'white', fontSize: 16 }} />
-              </Box>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                FertoBot
+                <PersonIcon sx={{ fontSize: '2.5rem' }} />
+              </Avatar>
+              <IconButton
+                sx={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  bgcolor: 'background.paper',
+                  border: 1,
+                  borderColor: colors.neutral[300],
+                  '&:hover': { bgcolor: colors.neutral[50] },
+                }}
+                size="small"
+              >
+                <EditIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            
+            <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, fontSize: '1.25rem', lineHeight: 1.4 }}>
+              iedc administrator
+            </Typography>
+            
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                newgen iedc • fertobot v1 • research project
               </Typography>
             </Box>
-            <Typography variant="caption" color="text.secondary">
-              Version 1.0.0 • Smart Agriculture System
+
+            {/* Compact Stats */}
+            <Card elevation={0} sx={{ backgroundColor: colors.neutral[50], borderRadius: 1, p: 2 }}>
+              <Grid container spacing={3} alignItems="center">
+                <Grid item xs={4}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: colors.neutral[700] }}>
+                      1
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      probe
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={4}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: colors.neutral[700] }}>
+                      0.5
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      hectares
+                    </Typography>
+                  </Box>
+                </Grid>
+                <Grid item xs={4}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 500, color: 'rgba(255, 152, 0, 0.8)' }}>
+                      offline
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      status
+                    </Typography>
+                  </Box>
+                </Grid>
+              </Grid>
+            </Card>
+          </CardContent>
+        </Card>
+
+        {/* Contact Information */}
+        <Card elevation={0} sx={{ mb: 3, borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+          <CardContent sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 500, mb: 2, fontSize: '1rem' }}>
+              contact information
+            </Typography>
+            
+            <List dense sx={{ '& .MuiListItem-root': { py: 1.5 } }}>
+              <ListItem>
+                <ListItemIcon>
+                  <EmailIcon sx={{ color: colors.neutral[600] }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                      admin@newgeniedc.edu
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      institutional email
+                    </Typography>
+                  }
+                />
+                <IconButton size="small" sx={{ color: colors.neutral[600] }}>
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </ListItem>
+              
+              <ListItem>
+                <ListItemIcon>
+                  <PhoneIcon sx={{ color: colors.neutral[600] }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                      +91 xxx xxx xxxx
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      mobile phone
+                    </Typography>
+                  }
+                />
+                <IconButton size="small" sx={{ color: colors.neutral[600] }}>
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </ListItem>
+            </List>
+          </CardContent>
+        </Card>
+
+        {/* Settings & Preferences */}
+        <Card elevation={0} sx={{ mb: 3, borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+          <CardContent sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 500, mb: 2, fontSize: '1rem' }}>
+              settings & preferences
+            </Typography>
+            
+            <List sx={{ '& .MuiListItem-root': { py: 1.5 } }}>
+              <ListItem>
+                <ListItemIcon>
+                  <NotificationsIcon sx={{ color: colors.neutral[600] }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                      push notifications
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      alerts for probe status changes
+                    </Typography>
+                  }
+                />
+                <Switch 
+                  defaultChecked 
+                  size="small"
+                  sx={{ 
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: colors.neutral[600]
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: colors.neutral[400]
+                    }
+                  }}
+                />
+              </ListItem>
+              
+              <ListItem>
+                <ListItemIcon>
+                  <Badge badgeContent={2} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.65rem' } }}>
+                    <BadgeIcon sx={{ color: colors.neutral[600] }} />
+                  </Badge>
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                      alert badges
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      show notification counts on icons
+                    </Typography>
+                  }
+                />
+                <Switch 
+                  defaultChecked 
+                  size="small"
+                  sx={{ 
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: colors.neutral[600]
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: colors.neutral[400]
+                    }
+                  }}
+                />
+              </ListItem>
+
+              <ListItem>
+                <ListItemIcon>
+                  <LanguageIcon sx={{ color: colors.neutral[600] }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                      language
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      english (india)
+                    </Typography>
+                  }
+                />
+                <IconButton size="small" sx={{ color: colors.neutral[600] }}>
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </ListItem>
+            </List>
+          </CardContent>
+        </Card>
+
+        {/* Account Actions */}
+        <Card elevation={0} sx={{ mb: 3, borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+          <CardContent sx={{ p: 3 }}>
+            <Typography variant="h6" sx={{ fontWeight: 500, mb: 2, fontSize: '1rem' }}>
+              account
+            </Typography>
+            
+            <List>
+              <ListItem 
+                button 
+                sx={{ 
+                  borderRadius: 1, 
+                  '&:hover': { backgroundColor: colors.neutral[50] },
+                  py: 1.5
+                }}
+              >
+                <ListItemIcon>
+                  <SecurityIcon sx={{ color: colors.neutral[600] }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                      security & privacy
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      password, 2fa, data privacy
+                    </Typography>
+                  }
+                />
+              </ListItem>
+              
+              <ListItem 
+                button 
+                sx={{ 
+                  borderRadius: 1, 
+                  '&:hover': { backgroundColor: colors.neutral[50] },
+                  py: 1.5
+                }}
+              >
+                <ListItemIcon>
+                  <HelpIcon sx={{ color: colors.neutral[600] }} />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                      help & support
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                      documentation, faqs, contact support
+                    </Typography>
+                  }
+                />
+              </ListItem>
+
+              <Divider sx={{ my: 1, borderColor: colors.neutral[200] }} />
+              
+              <ListItem 
+                button 
+                sx={{ 
+                  color: 'rgba(244, 67, 54, 0.8)', 
+                  borderRadius: 1,
+                  '&:hover': { backgroundColor: 'rgba(244, 67, 54, 0.05)' },
+                  py: 1.5
+                }}
+              >
+                <ListItemIcon sx={{ color: 'inherit' }}>
+                  <LogoutIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                      sign out
+                    </Typography>
+                  }
+                  secondary={
+                    <Typography variant="caption" sx={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                      log out of your fertobot account
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            </List>
+          </CardContent>
+        </Card>
+
+        {/* App Information */}
+        <Box sx={{ textAlign: 'center', py: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
+            <Box
+              sx={{
+                width: 24,
+                height: 24,
+                borderRadius: 1,
+                backgroundColor: colors.neutral[600],
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <SensorsIcon sx={{ color: 'white', fontSize: 16 }} />
+            </Box>
+            <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.875rem' }}>
+              fertobot
             </Typography>
           </Box>
-        </motion.div>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+            version 1.0.0 • newgen iedc research project
+          </Typography>
+        </Box>
       </Box>
-    </motion.div>
+    </div>
   );
 };
 

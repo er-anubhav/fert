@@ -48,12 +48,6 @@ const navigationItems = [
     path: '/security',
   },
   {
-    id: 'bluetooth',
-    label: 'Bluetooth',
-    icon: BluetoothIcon,
-    path: '/bluetooth',
-  },
-  {
     id: 'profile',
     label: 'Profile',
     icon: ProfileIcon,

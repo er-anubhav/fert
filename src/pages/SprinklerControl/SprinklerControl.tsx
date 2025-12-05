@@ -39,8 +39,9 @@ import {
   Delete as DeleteIcon,
   Timer as TimerIcon,
   Opacity as OpacityIcon,
+  Warning as WarningIcon,
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
+import { colors } from '../../utils/theme';
 
 interface IrrigationZone {
   id: string;
@@ -63,20 +64,7 @@ interface Schedule {
   enabled: boolean;
 }
 
-const animationVariants = {
-  fadeIn: {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.6 } },
-  },
-  stagger: {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  },
-};
+
 
 const SprinklerControl: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -85,63 +73,25 @@ const SprinklerControl: React.FC = () => {
   
   const [zones] = useState<IrrigationZone[]>([
     {
-      id: 'zone-1',
-      name: 'North Field',
-      status: 'active',
+      id: 'zone-001',
+      name: 'newgen iedc field',
+      status: 'inactive',
       duration: 30,
-      flowRate: 15.2,
-      lastRun: '2024-12-04T08:00:00',
-      moistureLevel: 45,
-      progress: 65,
-    },
-    {
-      id: 'zone-2',
-      name: 'South Field',
-      status: 'inactive',
-      duration: 25,
-      flowRate: 12.8,
-      lastRun: '2024-12-04T06:30:00',
-      nextScheduled: '2024-12-04T18:00:00',
-      moistureLevel: 72,
-    },
-    {
-      id: 'zone-3',
-      name: 'Greenhouse',
-      status: 'scheduled',
-      duration: 15,
-      flowRate: 8.5,
-      lastRun: '2024-12-04T07:00:00',
-      nextScheduled: '2024-12-04T16:00:00',
-      moistureLevel: 38,
-    },
-    {
-      id: 'zone-4',
-      name: 'East Garden',
-      status: 'inactive',
-      duration: 20,
-      flowRate: 10.3,
-      lastRun: '2024-12-03T19:00:00',
-      nextScheduled: '2024-12-04T19:00:00',
-      moistureLevel: 85,
+      flowRate: 0,
+      lastRun: '2025-12-03T14:37:00',
+      moistureLevel: 78, // matching probe 001 last reading
+      progress: 0,
     },
   ]);
 
   const [schedules] = useState<Schedule[]>([
     {
-      id: 'sched-1',
-      zoneId: 'zone-1',
+      id: 'sched-001',
+      zoneId: 'zone-001',
       time: '06:00',
       duration: 30,
       days: ['Mon', 'Wed', 'Fri'],
-      enabled: true,
-    },
-    {
-      id: 'sched-2',
-      zoneId: 'zone-2',
-      time: '18:00',
-      duration: 25,
-      days: ['Tue', 'Thu', 'Sat'],
-      enabled: true,
+      enabled: false, // disabled due to probe offline
     },
   ]);
 
@@ -163,79 +113,113 @@ const SprinklerControl: React.FC = () => {
   };
 
   const ZoneCard = ({ zone }: { zone: IrrigationZone }) => (
-    <motion.div variants={animationVariants.fadeIn}>
-      <Card sx={{ height: '100%' }}>
-        <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-            <Box>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
-                {zone.name}
+    <Card 
+      elevation={0}
+      sx={{ 
+        borderRadius: 1,
+        border: '1px solid',
+        borderColor: colors.neutral[200],
+        height: '100%'
+      }}
+    >
+      <CardContent sx={{ p: 3 }}>
+        {/* Header */}
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="h6" sx={{ fontWeight: 500, mb: 0.5, fontSize: '1rem', lineHeight: 1.5 }}>
+              {zone.name}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {zone.status === 'active' ? (
+                <PlayIcon sx={{ fontSize: 16, color: 'rgba(76, 175, 80, 0.8)' }} />
+              ) : zone.status === 'scheduled' ? (
+                <ScheduleIcon sx={{ fontSize: 16, color: 'rgba(255, 152, 0, 0.8)' }} />
+              ) : (
+                <StopIcon sx={{ fontSize: 16, color: colors.neutral[500] }} />
+              )}
+              <Typography variant="body2" sx={{ 
+                fontSize: '0.875rem', 
+                fontWeight: 500,
+                color: zone.status === 'active' ? 'rgba(76, 175, 80, 0.9)' : 
+                       zone.status === 'scheduled' ? 'rgba(255, 152, 0, 0.9)' : colors.neutral[600]
+              }}>
+                {zone.status}
               </Typography>
-              <Chip 
-                label={zone.status.toUpperCase()} 
-                color={getStatusColor(zone.status) as any}
-                size="small"
-              />
             </Box>
-            <IconButton 
-              size="small" 
-              onClick={() => setEditingZone(zone)}
-            >
-              <SettingsIcon />
-            </IconButton>
           </Box>
+          <IconButton size="small" onClick={() => setEditingZone(zone)}>
+            <SettingsIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+        </Box>
 
-          {zone.status === 'active' && zone.progress && (
-            <Box sx={{ mb: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                <Typography variant="body2">Running...</Typography>
-                <Typography variant="body2">{zone.progress}%</Typography>
-              </Box>
-              <LinearProgress 
-                variant="determinate" 
-                value={zone.progress} 
-                sx={{ height: 8, borderRadius: 4 }}
-              />
+        {/* Progress Bar for Active Zone */}
+        {zone.status === 'active' && zone.progress && (
+          <Box sx={{ mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>running</Typography>
+              <Typography variant="body2" sx={{ fontSize: '0.875rem', color: colors.neutral[600] }}>{zone.progress}%</Typography>
             </Box>
-          )}
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-            <OpacityIcon sx={{ fontSize: 16, color: 'primary.main' }} />
-            <Typography variant="body2" color="text.secondary">
-              Moisture: {zone.moistureLevel}%
-            </Typography>
+            <LinearProgress 
+              variant="determinate" 
+              value={zone.progress} 
+              sx={{ 
+                height: 6, 
+                borderRadius: 1,
+                backgroundColor: colors.neutral[200],
+                '& .MuiLinearProgress-bar': { backgroundColor: 'rgba(76, 175, 80, 0.8)' }
+              }}
+            />
           </Box>
+        )}
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-            <WaterIcon sx={{ fontSize: 16, color: 'info.main' }} />
-            <Typography variant="body2" color="text.secondary">
-              Flow: {zone.flowRate} L/min
-            </Typography>
-          </Box>
+        {/* Horizontal Metrics */}
+        <Grid container spacing={2} sx={{ mb: 1 }}>
+          <Grid item xs={6}>
+            <Box sx={{ textAlign: 'center', p: 2, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
+              <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 500, color: colors.neutral[700] }}>
+                {zone.moistureLevel}%
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>moisture</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={6}>
+            <Box sx={{ textAlign: 'center', p: 2, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
+              <Typography variant="h6" sx={{ fontSize: '1rem', fontWeight: 500, color: colors.neutral[700] }}>
+                {zone.flowRate}l/min
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>flow rate</Typography>
+            </Box>
+          </Grid>
+        </Grid>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <TimerIcon sx={{ fontSize: 16, color: 'warning.main' }} />
-            <Typography variant="body2" color="text.secondary">
-              Duration: {zone.duration}min
-            </Typography>
-          </Box>
+        {/* Action Buttons */}
+        <Box sx={{ display: 'flex', gap: 2, marginTop: 2 }}>
+          <Button
+            variant="outlined"
+            startIcon={<WarningIcon sx={{ fontSize: 16 }} />}
+            disabled
+            fullWidth
+            sx={{ 
+              py: 1.5,
+              fontSize: '0.875rem',
+              textTransform: 'none',
+              borderRadius: 1,
+              borderColor: colors.neutral[300],
+              color: colors.neutral[500],
+            }}
+          >
+            probe disconnected - cannot irrigate
+          </Button>
+        </Box>
 
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Button
-              variant={zone.status === 'active' ? 'contained' : 'outlined'}
-              color={zone.status === 'active' ? 'error' : 'primary'}
-              startIcon={zone.status === 'active' ? <StopIcon /> : <PlayIcon />}
-              onClick={() => handleZoneToggle(zone.id)}
-              size="small"
-              fullWidth
-              sx={{ py: { xs: 1, sm: 1.5 } }}
-            >
-              {zone.status === 'active' ? 'Stop' : 'Start'}
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
-    </motion.div>
+        {/* Status Info */}
+        <Box sx={{ mt: 2, pt: 2, borderTop: `1px solid ${colors.neutral[200]}` }}>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+            last irrigation: 3.12.2025 14:37 • probe disconnected 2 days ago
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
   );
 
   const TabPanel = ({ children, value, index }: any) => (
@@ -245,69 +229,107 @@ const SprinklerControl: React.FC = () => {
   );
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={animationVariants.stagger}
-      style={{ paddingBottom: '80px' }}
-    >
+    <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden', padding: '16px' }}>
+      {/* Compact Header */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: '1.75rem', sm: '2.125rem' } }}>
-          Irrigation Control
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          Manage and monitor your irrigation system zones and schedules
-        </Typography>
-      </Box>
-
-      {/* System Status Alert */}
-      <motion.div variants={animationVariants.fadeIn}>
-        <Alert severity="info" sx={{ mb: 3 }}>
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
-            alignItems: { xs: 'flex-start', sm: 'center' },
-            flexDirection: { xs: 'column', sm: 'row' },
-            gap: 2
-          }}>
-            <Typography variant="body2">
-              System Status: Online • Water Pressure: 2.3 bar • Flow Rate: 28.5 L/min
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 500, fontSize: '1.25rem', lineHeight: 1.4 }}>
+              newgen iedc irrigation • 1 zone
             </Typography>
-            <Button size="small" variant="outlined">
-              View Details
+            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+              disconnected • probe 001 offline • tank 92%
+            </Typography>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<AddIcon sx={{ fontSize: 16 }} />}
+              onClick={() => setScheduleDialog(true)}
+              sx={{
+                fontSize: '0.875rem',
+                textTransform: 'none',
+                borderRadius: 1,
+                borderColor: colors.neutral[300],
+                color: colors.neutral[700]
+              }}
+            >
+              add zone
             </Button>
           </Box>
-        </Alert>
-      </motion.div>
+        </Box>
 
-      {/* Tabs */}
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={activeTab} onChange={handleTabChange}>
-          <Tab label="Zone Control" />
-          <Tab label="Schedules" />
-          <Tab label="Usage History" />
-        </Tabs>
+        {/* Compact System Metrics */}
+        <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200], p: 2 }}>
+          <Grid container spacing={3} alignItems="center">
+            <Grid item xs={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <WarningIcon sx={{ fontSize: 18, color: 'rgba(255, 152, 0, 0.8)' }} />
+                <Box>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 500, color: 'rgba(255, 152, 0, 0.9)' }}>offline</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>system</Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <OpacityIcon sx={{ fontSize: 18, color: colors.neutral[600] }} />
+                <Box>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>0 l/min</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>flow rate</Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <ScheduleIcon sx={{ fontSize: 18, color: colors.neutral[600] }} />
+                <Box>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>0 bar</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>pressure</Typography>
+                </Box>
+              </Box>
+            </Grid>
+            <Grid item xs={3}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <WaterIcon sx={{ fontSize: 18, color: colors.neutral[600] }} />
+                <Box>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', fontWeight: 500 }}>92%</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem' }}>tank level</Typography>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </Card>
       </Box>
+
+
+
+      {/* Navigation Tabs */}
+      <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200], mb: 3 }}>
+        <Tabs 
+          value={activeTab} 
+          onChange={handleTabChange}
+          sx={{ 
+            '& .MuiTab-root': { 
+              textTransform: 'none', 
+              fontSize: '0.875rem',
+              color: colors.neutral[600],
+              '&.Mui-selected': { color: colors.neutral[800] }
+            }
+          }}
+        >
+          <Tab label="zones" />
+          <Tab label="schedules" />
+          <Tab label="usage" />
+        </Tabs>
+      </Card>
 
       {/* Zone Control Tab */}
       <TabPanel value={activeTab} index={0}>
-        <motion.div variants={animationVariants.fadeIn}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6">Irrigation Zones</Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => setScheduleDialog(true)}
-              size="small"
-            >
-              Add Zone
-            </Button>
-          </Box>
-        </motion.div>
-
-        <Grid container spacing={{ xs: 2, sm: 3 }}>
+        <Grid container spacing={3}>
           {zones.map((zone) => (
-            <Grid item xs={12} sm={6} lg={4} key={zone.id}>
+            <Grid item xs={12} key={zone.id}>
               <ZoneCard zone={zone} />
             </Grid>
           ))}
@@ -316,89 +338,132 @@ const SprinklerControl: React.FC = () => {
 
       {/* Schedules Tab */}
       <TabPanel value={activeTab} index={1}>
-        <motion.div variants={animationVariants.fadeIn}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-            <Typography variant="h6">Irrigation Schedules</Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => setScheduleDialog(true)}
-            >
-              Add Schedule
-            </Button>
-          </Box>
-
-          <Card>
-            <CardContent sx={{ p: 0 }}>
-              <List>
-                {schedules.map((schedule, index) => {
-                  const zone = zones.find(z => z.id === schedule.zoneId);
-                  return (
-                    <React.Fragment key={schedule.id}>
-                      <ListItem>
-                        <ListItemText
-                          primary={`${zone?.name} - ${schedule.time}`}
-                          secondary={`${schedule.duration}min • ${schedule.days.join(', ')}`}
-                        />
-                        <ListItemSecondaryAction>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Switch checked={schedule.enabled} />
-                            <IconButton size="small">
-                              <EditIcon />
-                            </IconButton>
-                            <IconButton size="small" color="error">
-                              <DeleteIcon />
-                            </IconButton>
-                          </Box>
-                        </ListItemSecondaryAction>
-                      </ListItem>
-                      {index < schedules.length - 1 && <Divider />}
-                    </React.Fragment>
-                  );
-                })}
-              </List>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+          <CardContent sx={{ p: 0 }}>
+            <Box sx={{ p: 3, borderBottom: `1px solid ${colors.neutral[200]}` }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6" sx={{ fontWeight: 500, fontSize: '1rem' }}>
+                  irrigation schedules
+                </Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<AddIcon sx={{ fontSize: 16 }} />}
+                  onClick={() => setScheduleDialog(true)}
+                  size="small"
+                  sx={{
+                    fontSize: '0.875rem',
+                    textTransform: 'none',
+                    borderRadius: 1,
+                    borderColor: colors.neutral[300],
+                    color: colors.neutral[700]
+                  }}
+                >
+                  add schedule
+                </Button>
+              </Box>
+            </Box>
+            <List sx={{ py: 0 }}>
+              {schedules.map((schedule, index) => {
+                const zone = zones.find(z => z.id === schedule.zoneId);
+                return (
+                  <React.Fragment key={schedule.id}>
+                    <ListItem sx={{ py: 3 }}>
+                      <ListItemText
+                        primary={
+                          <Typography variant="body1" sx={{ fontWeight: 500, fontSize: '0.875rem', lineHeight: 1.5 }}>
+                            {zone?.name} • {schedule.time}
+                          </Typography>
+                        }
+                        secondary={
+                          <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
+                            {schedule.duration}min • {schedule.days.join(', ')}
+                          </Typography>
+                        }
+                      />
+                      <ListItemSecondaryAction>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                          <Switch 
+                            checked={schedule.enabled} 
+                            size="small"
+                            sx={{ 
+                              '& .MuiSwitch-switchBase.Mui-checked': {
+                                color: colors.neutral[600]
+                              },
+                              '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                backgroundColor: colors.neutral[400]
+                              }
+                            }}
+                          />
+                          <IconButton size="small" sx={{ color: colors.neutral[600] }}>
+                            <EditIcon sx={{ fontSize: 16 }} />
+                          </IconButton>
+                          <IconButton size="small" sx={{ color: colors.neutral[600] }}>
+                            <DeleteIcon sx={{ fontSize: 16 }} />
+                          </IconButton>
+                        </Box>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    {index < schedules.length - 1 && <Divider sx={{ borderColor: colors.neutral[200] }} />}
+                  </React.Fragment>
+                );
+              })}
+            </List>
+          </CardContent>
+        </Card>
       </TabPanel>
 
       {/* Usage History Tab */}
       <TabPanel value={activeTab} index={2}>
-        <motion.div variants={animationVariants.fadeIn}>
-          <Typography variant="h6" sx={{ mb: 3 }}>Usage History</Typography>
-          <Grid container spacing={{ xs: 2, sm: 3 }}>
-            <Grid item xs={12} sm={6}>
-              <Card>
-                <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
-                    Today's Usage
-                  </Typography>
-                  <Typography variant="h4" color="primary" sx={{ mb: 1 }}>
-                    245L
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Water consumed across all zones
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
-                    This Week
-                  </Typography>
-                  <Typography variant="h4" color="success.main" sx={{ mb: 1 }}>
-                    1.8k L
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    15% less than last week
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+              <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: colors.neutral[700] }}>
+                  0L
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  today's usage
+                </Typography>
+              </CardContent>
+            </Card>
           </Grid>
-        </motion.div>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+              <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: colors.neutral[700] }}>
+                  185L
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  this week
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+              <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: colors.neutral[700] }}>
+                  1.2k L
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  this month
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Card elevation={0} sx={{ borderRadius: 1, border: '1px solid', borderColor: colors.neutral[200] }}>
+              <CardContent sx={{ p: 3, textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ fontWeight: 500, mb: 1, color: 'rgba(255, 152, 0, 0.8)' }}>
+                  offline
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+                  2 days ago
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </TabPanel>
 
       {/* Schedule Dialog */}
@@ -444,7 +509,7 @@ const SprinklerControl: React.FC = () => {
           <Button variant="contained">Add Schedule</Button>
         </DialogActions>
       </Dialog>
-    </motion.div>
+    </div>
   );
 };
 

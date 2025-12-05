@@ -37,14 +37,12 @@ import {
   CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import PWAInstallButton from '../../components/PWA/PWAInstallButton';
-import { motion } from 'framer-motion';
 import SummaryCards from '../../components/Dashboard/SummaryCards';
 import LiveCharts from '../../components/Dashboard/LiveCharts';
 import RecommendationsPanel from '../../components/Dashboard/RecommendationsPanel';
 import AlertsPanel from '../../components/Dashboard/AlertsPanel';
 import WeatherWidget from '../../components/Dashboard/WeatherWidget';
 import ConnectivityStatus from '../../components/Dashboard/ConnectivityStatus';
-import { animationVariants } from '../../utils/theme';
 import { MotionNotificationService } from '../../services/motionNotificationService';
 
 const Dashboard: React.FC = () => {
@@ -152,30 +150,37 @@ const Dashboard: React.FC = () => {
   ];
   
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={animationVariants.stagger}
-      style={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}
-    >
+    <div style={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
       <Box sx={{ 
-        mb: 1,
+        mb: 0.5,
         width: '100%',
         maxWidth: '100%',
         overflow: 'hidden'
       }}>
-        <motion.div variants={animationVariants.fadeIn}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
             <Box>
-              <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+              <Typography variant="h5" sx={{ fontWeight: 500, mb: 0.125 }}>
                 Farm Overview
               </Typography>
-              <Typography variant="body1" color="text.secondary">
-                powered by FertoBot
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
+                powered by FertoBot v1
               </Typography>
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              <Badge badgeContent={3} color="error">
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Badge 
+                badgeContent={3} 
+                color="error"
+                sx={{
+                  '& .MuiBadge-badge': {
+                    top: 9,
+                    right: 10,
+                    width: 17,
+                    height: 17,
+                    fontSize: '0.75rem',
+                    lineHeight: 1.5,
+                  }
+                }}
+              >
                 <IconButton onClick={() => setNotificationDialog(true)}>
                   <NotificationsIcon />
                 </IconButton>
@@ -183,66 +188,62 @@ const Dashboard: React.FC = () => {
               <IconButton onClick={() => window.location.reload()}>
                 <RefreshIcon />
               </IconButton>
-              <Chip
-                label="All Systems Online"
-                color="success"
-                size="small"
-                icon={<CheckCircleIcon />}
-              />
+              <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 0.75,
+                backgroundColor: 'rgba(255, 152, 0, 0.05)',
+                px: 1.5,
+                py: 0.75,
+                borderRadius: 1,
+                border: '1px solid rgba(255, 152, 0, 0.15)'
+              }}>
+                <WarningIcon sx={{ fontSize: 16, color: 'rgba(255, 152, 0, 0.8)' }} />
+                <Box>
+                  <Typography variant="body2" sx={{ 
+                    fontSize: '0.875rem', 
+                    fontWeight: 500, 
+                    color: 'rgba(255, 152, 0, 0.9)',
+                    lineHeight: 1.5,
+                    mb: 0.25
+                  }}>
+                    Probe Disconnected
+                  </Typography>
+                  <Typography variant="caption" sx={{ 
+                    fontSize: '0.75rem', 
+                    color: 'text.secondary',
+                    display: 'block',
+                    lineHeight: 1.5 
+                  }}>
+                    Last: 3.12.2025 14:37
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
           </Box>
-        </motion.div>
-        
-        {/* Quick Actions Panel */}
-        <motion.div variants={animationVariants.fadeIn}>
-          <Card sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>
-                Quick Actions
-              </Typography>
-              <Grid container spacing={2} sx={{ width: '100%', maxWidth: '100%' }}>
-                {quickActions.map((action, index) => {
-                  const IconComponent = action.icon;
-                  return (
-                    <Grid item xs={6} sm={6} md={3} key={index}>
-                      <Button
-                        variant="outlined"
-                        color={action.color}
-                        startIcon={<IconComponent />}
-                        onClick={action.action}
-                        fullWidth
-                        sx={{
-                          py: 1.5,
-                          flexDirection: { xs: 'column', sm: 'row' },
-                          gap: 1,
-                          '& .MuiButton-startIcon': {
-                            mx: { xs: 0, sm: 1 },
-                            mb: { xs: 0.5, sm: 0 },
-                          }
-                        }}
-                      >
-                        {action.label}
-                      </Button>
-                    </Grid>
-                  );
-                })}
-              </Grid>
-            </CardContent>
-          </Card>
-        </motion.div>
       </Box>
 
+      {/* Weather Widget - Environmental Overview */}
+      <div style={{ marginBottom: '16px' }}>
+        <WeatherWidget />
+      </div>
+
+      {/* Connectivity Status - Device Health */}
+      <div style={{ marginBottom: '16px' }}>
+        <ConnectivityStatus />
+      </div>
+
       {/* Summary Cards Row - Outside Grid to remove padding */}
-      <motion.div variants={animationVariants.fadeIn} style={{ marginBottom: '24px' }}>
+      <div style={{ marginBottom: '24px' }}>
         <SummaryCards />
-      </motion.div>
+      </div>
 
       {/* Main Content Section - Flex Column Layout */}
       <Box sx={{ 
         display: 'flex',
         flexDirection: 'column',
-        gap: 3,
-        mb: 3,
+        gap: 2,
+        mb: 2,
         width: '100%',
         maxWidth: '100%',
         boxSizing: 'border-box',
@@ -252,30 +253,20 @@ const Dashboard: React.FC = () => {
           boxSizing: 'border-box'
         }
       }}>
-        {/* Live Charts */}
-        <motion.div variants={animationVariants.slideIn}>
-          <LiveCharts />
-        </motion.div>
-
-        {/* Recommendations Panel */}
-        <motion.div variants={animationVariants.slideIn}>
-          <RecommendationsPanel />
-        </motion.div>
-
-        {/* Weather Widget */}
-        <motion.div variants={animationVariants.scaleIn}>
-          <WeatherWidget />
-        </motion.div>
-
-        {/* Connectivity Status */}
-        <motion.div variants={animationVariants.scaleIn}>
-          <ConnectivityStatus />
-        </motion.div>
-
-        {/* Alerts Panel */}
-        <motion.div variants={animationVariants.scaleIn}>
+        {/* 1. Alerts Panel - Most Critical First */}
+        <div>
           <AlertsPanel />
-        </motion.div>
+        </div>
+
+        {/* 2. Recommendations Panel - Actionable Insights */}
+        <div>
+          <RecommendationsPanel />
+        </div>
+
+        {/* 3. Live Charts - Current Data */}
+        <div>
+          <LiveCharts />
+        </div>
       </Box>
       
       {/* Motion Detection Notification */}
@@ -364,7 +355,7 @@ const Dashboard: React.FC = () => {
           <Button variant="contained">View All</Button>
         </DialogActions>
       </Dialog>
-    </motion.div>
+    </div>
   );
 };
 

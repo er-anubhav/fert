@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-  Grid,
   Card,
-  CardContent,
   Typography,
   Box,
   LinearProgress,
-  Chip,
   useTheme,
+  alpha,
 } from '@mui/material';
 import {
   WaterDrop as MoistureIcon,
@@ -17,19 +15,21 @@ import {
   Tune as PHIcon,
   LocalDrink as WaterTankIcon,
   SignalWifi4Bar as ConnectivityIcon,
+  TrendingUp,
+  TrendingDown,
+  TrendingFlat,
 } from '@mui/icons-material';
-import { motion } from 'framer-motion';
 import { DashboardCard } from '../../types';
 import { getStatusColor, colors } from '../../utils/theme';
 
-// Mock data - in production, this would come from your API
+// Winter farming data - typical values for Nov-Dec agricultural monitoring
 const mockSummaryData: DashboardCard[] = [
   {
     id: 'moisture',
     title: 'Soil Moisture',
-    value: 68,
+    value: 78,
     unit: '%',
-    change: { value: +5, trend: 'up', period: '24h' },
+    change: { value: +15, trend: 'up', period: '24h' },
     status: 'normal',
     icon: 'moisture',
     color: colors.sensor.moisture,
@@ -37,9 +37,9 @@ const mockSummaryData: DashboardCard[] = [
   {
     id: 'temperature',
     title: 'Temperature',
-    value: 24.5,
+    value: 12.8,
     unit: '°C',
-    change: { value: -2, trend: 'down', period: '24h' },
+    change: { value: -3.5, trend: 'down', period: '24h' },
     status: 'normal',
     icon: 'temperature',
     color: colors.sensor.temperature,
@@ -47,9 +47,9 @@ const mockSummaryData: DashboardCard[] = [
   {
     id: 'humidity',
     title: 'Humidity',
-    value: 72,
+    value: 82,
     unit: '%',
-    change: { value: +3, trend: 'up', period: '24h' },
+    change: { value: +8, trend: 'up', period: '24h' },
     status: 'normal',
     icon: 'humidity',
     color: colors.sensor.humidity,
@@ -57,8 +57,9 @@ const mockSummaryData: DashboardCard[] = [
   {
     id: 'npk',
     title: 'N-P-K Levels',
-    value: 'Balanced',
-    change: { value: 0, trend: 'stable', period: '7d' },
+    value: '45-38-42',
+    unit: 'ppm',
+    change: { value: +2, trend: 'up', period: '7d' },
     status: 'normal',
     icon: 'npk',
     color: colors.sensor.nitrogen,
@@ -66,8 +67,8 @@ const mockSummaryData: DashboardCard[] = [
   {
     id: 'ph',
     title: 'pH Level',
-    value: 6.8,
-    change: { value: +0.2, trend: 'up', period: '24h' },
+    value: 6.5,
+    change: { value: -0.1, trend: 'down', period: '24h' },
     status: 'normal',
     icon: 'ph',
     color: colors.sensor.pH,
@@ -75,10 +76,10 @@ const mockSummaryData: DashboardCard[] = [
   {
     id: 'water_tank',
     title: 'Water Tank',
-    value: 85,
+    value: 92,
     unit: '%',
-    change: { value: -15, trend: 'down', period: '24h' },
-    status: 'warning',
+    change: { value: +18, trend: 'up', period: '24h' },
+    status: 'normal',
     icon: 'water_tank',
     color: colors.primary[500],
   },
@@ -103,96 +104,130 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, index }) => {
   const theme = useTheme();
   const Icon = iconMap[data.icon as keyof typeof iconMap];
 
-  const getTrendColor = (trend: string) => {
+  const getTrendConfig = (trend: string) => {
     switch (trend) {
-      case 'up': return colors.status.success;
-      case 'down': return colors.status.error;
-      case 'stable': return colors.neutral[500];
-      default: return colors.neutral[500];
+      case 'up': 
+        return {
+          color: colors.status.success,
+          icon: TrendingUp,
+          bgColor: alpha(colors.status.success, 0.1)
+        };
+      case 'down': 
+        return {
+          color: colors.status.error,
+          icon: TrendingDown,
+          bgColor: alpha(colors.status.error, 0.1)
+        };
+      case 'stable': 
+        return {
+          color: colors.neutral[600],
+          icon: TrendingFlat,
+          bgColor: alpha(colors.neutral[600], 0.1)
+        };
+      default: 
+        return {
+          color: colors.neutral[600],
+          icon: TrendingFlat,
+          bgColor: alpha(colors.neutral[600], 0.1)
+        };
     }
   };
 
-  const getTrendSymbol = (trend: string) => {
-    switch (trend) {
-      case 'up': return '↗';
-      case 'down': return '↘';
-      case 'stable': return '→';
-      default: return '';
-    }
-  };
+  const trendConfig = data.change ? getTrendConfig(data.change.trend) : null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.1 }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      style={{ width: '100%', display: 'flex' }}
-    >
+    <div style={{ width: '100%', display: 'flex' }}>
       <Card 
+        elevation={0}
         sx={{ 
           width: '100%',
-          height: '100%',
-          minHeight: { xs: 160, sm: 180 },
+          minHeight: { xs: 140, sm: 160 },
+          borderRadius: 1,
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%)',
+          border: '1px solid',
+          borderColor: alpha(colors.neutral[200], 0.8),
           position: 'relative',
-          overflow: 'visible',
-          display: 'flex',
-          flexDirection: 'column',
-          flex: 1,
-          '&:hover': {
-            boxShadow: theme.shadows[8],
-            transform: 'translateY(-2px)',
-          },
-          transition: 'all 0.3s ease-in-out',
-          borderRadius: 2,
-        }}
-      >
-        {/* Status indicator */}
-        <Box
-          sx={{
+          overflow: 'hidden',
+          boxShadow: 'none',
+          '&::before': {
+            content: '""',
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
-            height: 4,
-            backgroundColor: getStatusColor(data.status),
-            borderTopLeftRadius: theme.shape.borderRadius,
-            borderTopRightRadius: theme.shape.borderRadius,
+            height: '3px',
+            background: `linear-gradient(90deg, ${data.color}, ${alpha(data.color, 0.7)})`,
+            borderRadius: '0 0 2px 2px',
+          }
+        }}
+      >
+        {/* Decorative elements */}
+        <Box
+          sx={{
+            position: 'absolute',
+            top: -20,
+            right: -20,
+            width: 60,
+            height: 60,
+            borderRadius: '50%',
+            background: `radial-gradient(circle, ${alpha(data.color, 0.1)} 0%, transparent 70%)`,
+            pointerEvents: 'none',
           }}
         />
 
-        <CardContent sx={{ 
-          p: { xs: 2, sm: 2.5 }, 
-          flex: 1,
+        <Box sx={{ 
+          p: 3, 
+          height: '100%',
           display: 'flex',
           flexDirection: 'column',
-          height: '100%',
+          position: 'relative',
+          zIndex: 1,
         }}>
-          {/* Header section */}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
-            <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ 
-                fontWeight: 500, 
-                mb: 1,
-                fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                lineHeight: 1.2,
-              }}>
+          {/* Header with icon */}
+          <Box sx={{ 
+            display: 'flex', 
+            alignItems: 'flex-start', 
+            justifyContent: 'space-between',
+            mb: 2
+          }}>
+            <Box>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  color: colors.neutral[600],
+                  fontWeight: 500,
+                  fontSize: '0.875rem',
+                  letterSpacing: '0.5px',
+                  textTransform: 'uppercase',
+                  mb: 0.5
+                }}
+              >
                 {data.title}
               </Typography>
+              
               <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                <Typography variant="h4" sx={{ 
-                  fontWeight: 700, 
-                  lineHeight: 1,
-                  fontSize: { xs: '1.5rem', sm: '1.875rem' },
-                  color: 'text.primary',
-                }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 500,
+                    fontSize: { xs: '1rem', sm: '1.125rem' },
+                    color: colors.neutral[700],
+                    lineHeight: 1.2,
+                  }}
+                >
                   {data.value}
                 </Typography>
                 {data.unit && (
-                  <Typography variant="body2" color="text.secondary" sx={{
-                    fontSize: { xs: '0.75rem', sm: '0.875rem' },
-                    fontWeight: 500,
-                  }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{
+                      color: colors.neutral[500],
+                      fontSize: '0.875rem',
+                      lineHeight: 1.5,
+                      fontWeight: 600,
+                      ml: 0.5
+                    }}
+                  >
                     {data.unit}
                   </Typography>
                 )}
@@ -200,74 +235,122 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ data, index }) => {
             </Box>
             
             <Box
+              className="icon-container"
               sx={{
-                width: { xs: 36, sm: 44 },
-                height: { xs: 36, sm: 44 },
-                borderRadius: 1.5,
-                backgroundColor: `${data.color}15`,
+                width: 56,
+                height: 56,
+                borderRadius: 1,
+                background: `linear-gradient(135deg, ${alpha(data.color, 0.1)} 0%, ${alpha(data.color, 0.05)} 100%)`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                flexShrink: 0,
-                ml: 1.5,
+                border: '2px solid',
+                borderColor: alpha(data.color, 0.1),
               }}
             >
-              <Icon sx={{ fontSize: { xs: 18, sm: 22 }, color: data.color }} />
+              <Icon sx={{ 
+                fontSize: 26, 
+                color: data.color
+              }} />
             </Box>
           </Box>
           
-          {/* Spacer */}
-          <Box sx={{ flex: 1 }} />
-
-          {/* Change indicator - always at bottom */}
-          <Box sx={{ mt: 'auto' }}>
-            {data.change && (
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                <Chip
-                  label={`${getTrendSymbol(data.change.trend)} ${Math.abs(data.change.value)}${data.unit || ''}`}
-                  size="small"
-                  sx={{
-                    backgroundColor: `${getTrendColor(data.change.trend)}15`,
-                    color: getTrendColor(data.change.trend),
-                    fontWeight: 600,
-                    fontSize: '0.7rem',
-                    height: 24,
+          {/* Trend indicator */}
+          {data.change && trendConfig && (
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              gap: 1,
+              mt: 'auto',
+              pt: 1
+            }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.5,
+                  px: 1.5,
+                  py: 0.5,
+                  borderRadius: 1,
+                  backgroundColor: trendConfig.bgColor,
+                  border: '1px solid',
+                  borderColor: alpha(trendConfig.color, 0.2),
+                }}
+              >
+                <trendConfig.icon sx={{ 
+                  fontSize: 14, 
+                  color: trendConfig.color 
+                }} />
+                <Typography 
+                  variant="caption" 
+                  sx={{ 
+                    fontWeight: 500,
+                    color: trendConfig.color,
+                    fontSize: '0.75rem',
+                    lineHeight: 1.5
                   }}
-                />
-                <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                  vs {data.change.period}
+                >
+                  {Math.abs(data.change.value)}{data.unit || ''}
                 </Typography>
               </Box>
-            )}
-          </Box>
+              
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: colors.neutral[500],
+                  fontSize: '0.75rem',
+                  fontWeight: 500
+                }}
+              >
+                vs {data.change.period}
+              </Typography>
+            </Box>
+          )}
 
-          {/* Special progress bar for water tank */}
+          {/* Water tank progress bar */}
           {data.id === 'water_tank' && typeof data.value === 'number' && (
             <Box sx={{ mt: 2 }}>
               <LinearProgress 
                 variant="determinate" 
                 value={data.value} 
                 sx={{ 
-                  height: 6, 
-                  borderRadius: 3,
-                  backgroundColor: colors.neutral[200],
+                  height: 8, 
+                  borderRadius: 4,
+                  backgroundColor: alpha(colors.neutral[300], 0.3),
                   '& .MuiLinearProgress-bar': {
-                    backgroundColor: data.value < 30 ? colors.status.error : 
-                                  data.value < 60 ? colors.status.warning : 
-                                  colors.status.success,
+                    borderRadius: 4,
+                    background: `linear-gradient(90deg, ${
+                      data.value < 30 ? colors.status.error : 
+                      data.value < 60 ? colors.status.warning : 
+                      colors.status.success
+                    }, ${alpha(
+                      data.value < 30 ? colors.status.error : 
+                      data.value < 60 ? colors.status.warning : 
+                      colors.status.success, 0.8
+                    )})`,
+
                   },
                 }}
               />
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                {data.value < 30 ? 'Low Level - Refill Soon' : 
-                 data.value < 60 ? 'Moderate Level' : 
-                 'Good Level'}
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  mt: 1, 
+                  display: 'block',
+                  color: colors.neutral[600],
+                  fontSize: '0.75rem',
+                  fontWeight: 500
+                }}
+              >
+                {data.value < 30 ? '🔴 Low - Refill needed' : 
+                 data.value < 60 ? '🟡 Moderate level' : 
+                 '🟢 Optimal level'}
               </Typography>
             </Box>
           )}
-        </CardContent>
+        </Box>
       </Card>
-    </motion.div>
+    </div>
   );
 };
 
@@ -282,16 +365,14 @@ const SummaryCards: React.FC = () => {
         lg: 'repeat(4, 1fr)',
         xl: 'repeat(6, 1fr)',
       },
-      gap: { xs: 2, sm: 2.5, md: 3 },
+      gap: { xs: 1, sm: 1.5, md: 2 },
       width: '100%',
+      maxWidth: '100%',
+      p: 0,
+      m: 0,
     }}>
       {mockSummaryData.map((card, index) => (
-        <Box key={card.id} sx={{ 
-          minHeight: { xs: 160, sm: 180 },
-          display: 'flex',
-        }}>
-          <SummaryCard data={card} index={index} />
-        </Box>
+        <SummaryCard key={card.id} data={card} index={index} />
       ))}
     </Box>
   );

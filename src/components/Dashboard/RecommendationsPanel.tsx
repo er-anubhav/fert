@@ -4,16 +4,17 @@ import {
   CardContent,
   Typography,
   Box,
-  List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
+  Grid,
   IconButton,
   Chip,
   Button,
   Collapse,
   Divider,
   useTheme,
+  useMediaQuery,
+  Paper,
+  Fade,
+  Tooltip,
 } from '@mui/material';
 import {
   WaterDrop as IrrigationIcon,
@@ -25,75 +26,64 @@ import {
   CheckCircle as CheckIcon,
   AccessTime as TimeIcon,
   TrendingUp as ImpactIcon,
+  Schedule as ScheduleIcon,
+  Info as InfoIcon,
+  PriorityHigh as PriorityIcon,
+  AutoFixHigh as AutoFixIcon,
 } from '@mui/icons-material';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Recommendation } from '../../types';
 import { colors, getStatusColor } from '../../utils/theme';
 
-// Mock recommendations data
+// Winter farming recommendations - synced with probe disconnection timeline
 const mockRecommendations: Recommendation[] = [
   {
     id: '1',
-    type: 'irrigation',
-    priority: 'high',
-    title: 'Irrigation Recommended',
-    description: 'Soil moisture in North Field has dropped to 45%. Consider activating irrigation system for 30 minutes.',
+    type: 'warning',
+    priority: 'critical',
+    title: 'Probe Connectivity Issue',
+    description: 'Probe 001 at Newgen IEDC offline for 48+ hours. Manual field inspection recommended to ensure crop health.',
     probeId: 'probe-001',
     actionRequired: true,
-    timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    estimatedImpact: 'Prevent crop stress, maintain optimal growth',
-    icon: 'irrigation',
-    color: colors.sensor.moisture,
+    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
+    estimatedImpact: 'Prevent data loss and maintain crop monitoring',
+    icon: 'warning',
+    color: colors.neutral[600],
   },
   {
     id: '2',
-    type: 'fertilizer',
+    type: 'irrigation',
     priority: 'medium',
-    title: 'Nitrogen Deficiency Detected',
-    description: 'Nitrogen levels in South Field are below optimal range (32 ppm vs 45-60 ppm recommended).',
-    probeId: 'probe-003',
+    title: 'Winter Irrigation Schedule',
+    description: 'Reduce irrigation frequency to twice weekly during December. Current soil moisture at 78% indicates adequate hydration.',
     actionRequired: true,
-    timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000), // 4 hours ago
-    estimatedImpact: 'Improve leaf development and overall plant health',
-    icon: 'fertilizer',
-    color: colors.sensor.nitrogen,
+    timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
+    estimatedImpact: 'Optimize water usage for winter crops',
+    icon: 'irrigation',
+    color: colors.neutral[600],
   },
   {
     id: '3',
-    type: 'warning',
-    priority: 'critical',
-    title: 'pH Level Alert',
-    description: 'pH in greenhouse has risen to 8.2. This may affect nutrient uptake. Immediate attention required.',
-    probeId: 'probe-002',
-    actionRequired: true,
-    timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-    estimatedImpact: 'Restore optimal nutrient absorption',
-    icon: 'warning',
-    color: colors.status.error,
+    type: 'fertilizer',
+    priority: 'low',
+    title: 'Pre-Spring Soil Preparation',
+    description: 'Apply phosphorus-rich fertilizer (20-30 ppm) in late December to prepare soil for spring planting season.',
+    actionRequired: false,
+    timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
+    estimatedImpact: 'Enhanced root development for spring crops',
+    icon: 'fertilizer',
+    color: colors.neutral[600],
   },
   {
     id: '4',
     type: 'harvest',
-    priority: 'low',
-    title: 'Harvest Window Opening',
-    description: 'Weather conditions and crop maturity indicators suggest optimal harvest conditions in 5-7 days.',
-    actionRequired: false,
-    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
-    estimatedImpact: 'Maximize crop quality and yield',
-    icon: 'harvest',
-    color: colors.secondary[500],
-  },
-  {
-    id: '5',
-    type: 'irrigation',
     priority: 'medium',
-    title: 'Water Usage Optimization',
-    description: 'Current irrigation schedule could be optimized to save 15% water while maintaining crop health.',
-    actionRequired: false,
-    timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
-    estimatedImpact: 'Reduce water consumption, lower costs',
-    icon: 'irrigation',
-    color: colors.primary[500],
+    title: 'Winter Crop Monitoring',
+    description: 'Winter wheat showing good growth at 12.8°C. Monitor for frost damage and consider protective covering below 5°C.',
+    actionRequired: true,
+    timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6 hours ago
+    estimatedImpact: 'Protect crop yield during cold weather',
+    icon: 'harvest',
+    color: colors.neutral[600],
   },
 ];
 
@@ -107,9 +97,9 @@ const iconMap = {
 
 const getPriorityColor = (priority: string) => {
   switch (priority) {
-    case 'critical': return colors.status.error;
-    case 'high': return colors.status.warning;
-    case 'medium': return colors.status.info;
+    case 'critical': return colors.neutral[800];
+    case 'high': return colors.neutral[700];
+    case 'medium': return colors.neutral[600];
     case 'low': return colors.neutral[500];
     default: return colors.neutral[500];
   }
@@ -136,157 +126,126 @@ interface RecommendationItemProps {
 }
 
 const RecommendationItem: React.FC<RecommendationItemProps> = ({ recommendation, index }) => {
-  const [expanded, setExpanded] = useState(false);
   const [acknowledged, setAcknowledged] = useState(false);
   const theme = useTheme();
   
   const Icon = iconMap[recommendation.icon as keyof typeof iconMap];
-
-  const handleToggleExpand = () => {
-    setExpanded(!expanded);
-  };
 
   const handleAcknowledge = () => {
     setAcknowledged(true);
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.3, delay: index * 0.1 }}
-    >
-      <ListItem
+    <Box sx={{ mb: 1.5 }}>
+      <Paper
+        elevation={0}
         sx={{
-          borderRadius: 2,
-          mb: 1,
+          borderRadius: 1,
           border: '1px solid',
-          borderColor: acknowledged ? colors.neutral[200] : `${getPriorityColor(recommendation.priority)}40`,
+          borderColor: colors.neutral[200],
           backgroundColor: acknowledged ? colors.neutral[50] : 'white',
-          opacity: acknowledged ? 0.7 : 1,
           '&:hover': {
             backgroundColor: colors.neutral[50],
           },
         }}
       >
-        <ListItemAvatar>
-          <Avatar
-            sx={{
-              backgroundColor: `${recommendation.color}20`,
-              color: recommendation.color,
-              border: '2px solid',
-              borderColor: `${recommendation.color}40`,
-            }}
-          >
-            <Icon />
-          </Avatar>
-        </ListItemAvatar>
-
-        <Box sx={{ flexGrow: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-            <Typography variant="body1" sx={{ fontWeight: 600 }}>
-              {recommendation.title}
-            </Typography>
-            <Chip
-              label={recommendation.priority.toUpperCase()}
-              size="small"
-              sx={{
-                backgroundColor: `${getPriorityColor(recommendation.priority)}20`,
-                color: getPriorityColor(recommendation.priority),
-                fontWeight: 600,
-                fontSize: '0.7rem',
-              }}
-            />
-            {recommendation.actionRequired && !acknowledged && (
-              <Chip
-                label="ACTION REQUIRED"
-                size="small"
-                color="error"
-                variant="outlined"
-              />
-            )}
-          </Box>
-          
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            {recommendation.description}
-          </Typography>
-          
+        <CardContent sx={{ p: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <TimeIcon sx={{ fontSize: 14 }} />
-              <Typography variant="caption" color="text.secondary">
-                {getTimeAgo(recommendation.timestamp)}
-              </Typography>
-            </Box>
-            {recommendation.probeId && (
-              <Typography variant="caption" color="primary">
-                {recommendation.probeId}
-              </Typography>
-            )}
-          </Box>
-        </Box>
-
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {!acknowledged && recommendation.actionRequired && (
-            <Button
-              size="small"
-              variant="contained"
-              color="primary"
-              startIcon={<CheckIcon />}
-              onClick={handleAcknowledge}
+            {/* Compact Icon */}
+            <Box
+              sx={{
+                width: 40,
+                height: 40,
+                borderRadius: 1,
+                backgroundColor: colors.neutral[100],
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
             >
-              Acknowledge
-            </Button>
-          )}
-          <IconButton
-            onClick={handleToggleExpand}
-            sx={{
-              transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: theme.transitions.create('transform'),
-            }}
-          >
-            <ExpandMoreIcon />
-          </IconButton>
-        </Box>
-      </ListItem>
+              <Icon sx={{ fontSize: 20, color: colors.neutral[600] }} />
+            </Box>
 
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <Box sx={{ px: 2, pb: 2 }}>
-          <Card variant="outlined" sx={{ backgroundColor: colors.neutral[25] }}>
-            <CardContent sx={{ py: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <ImpactIcon sx={{ fontSize: 18, color: colors.primary[500] }} />
-                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                  Expected Impact
+            {/* Content */}
+            <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 200 }}>
+                    {recommendation.title}
+                  </Typography>
+                  <Chip
+                    label={recommendation.priority}
+                    size="small"
+                    sx={{
+                      height: 20,
+                      fontSize: '0.75rem',
+                      lineHeight: 1.5,
+                      backgroundColor: `${getPriorityColor(recommendation.priority)}20`,
+                      color: getPriorityColor(recommendation.priority),
+                    }}
+                  />
+                  {recommendation.actionRequired && !acknowledged && (
+                    <Chip
+                      label="Action"
+                      size="small"
+                      color="error"
+                      sx={{ height: 20, fontSize: '0.75rem', lineHeight: 1.5, borderRadius: 2  }}
+                    />
+                  )}
+                </Box>
+                <Typography variant="caption" color="text.secondary">
+                  {getTimeAgo(recommendation.timestamp)}
                 </Typography>
               </Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                {recommendation.estimatedImpact}
+              
+              <Typography 
+                variant="body2" 
+                color="text.secondary" 
+                sx={{ mb: 1, fontSize: '0.875rem', lineHeight: 1.4 }}
+              >
+                {recommendation.description}
               </Typography>
               
-              {recommendation.actionRequired && (
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  <Button variant="outlined" size="small">
-                    View Details
-                  </Button>
-                  <Button variant="outlined" size="small">
-                    Schedule Action
-                  </Button>
-                  <Button variant="outlined" size="small">
-                    Dismiss
+              {/* Actions */}
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  {!acknowledged && recommendation.actionRequired && (
+                    <Button
+                      variant="contained"
+                      size="small"
+                      onClick={handleAcknowledge}
+                      sx={{ textTransform: 'none', fontSize: '0.875rem', lineHeight: 1.5, borderRadius: 2  }}
+                    >
+                      Acknowledge
+                    </Button>
+                  )}
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    sx={{ textTransform: 'none', fontSize: '0.8rem', borderRadius: 2  }}
+                  >
+                    Details
                   </Button>
                 </Box>
-              )}
-            </CardContent>
-          </Card>
-        </Box>
-      </Collapse>
-    </motion.div>
+                
+                {recommendation.probeId && (
+                  <Typography variant="caption" color="primary" sx={{ fontWeight: 500 }}>
+                    {recommendation.probeId}
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          </Box>
+        </CardContent>
+      </Paper>
+    </Box>
   );
 };
 
 const RecommendationsPanel: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'critical' | 'action-required'>('all');
+  const theme = useTheme();
 
   const filteredRecommendations = mockRecommendations.filter(rec => {
     switch (filter) {
@@ -302,40 +261,55 @@ const RecommendationsPanel: React.FC = () => {
   const actionRequiredCount = mockRecommendations.filter(r => r.actionRequired).length;
   const criticalCount = mockRecommendations.filter(r => r.priority === 'critical').length;
 
-  return (
-    <Card sx={{ width: '100%', maxWidth: '100%', overflow: 'hidden' }}>
-      <CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
-          <Box>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Smart Recommendations
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              AI-powered insights and action items for your farm
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Chip
-              label={`${actionRequiredCount} Actions`}
-              color="primary"
-              size="small"
-              variant={filter === 'action-required' ? 'filled' : 'outlined'}
-              onClick={() => setFilter(filter === 'action-required' ? 'all' : 'action-required')}
-              clickable
-            />
-            <Chip
-              label={`${criticalCount} Critical`}
-              color="error"
-              size="small"
-              variant={filter === 'critical' ? 'filled' : 'outlined'}
-              onClick={() => setFilter(filter === 'critical' ? 'all' : 'critical')}
-              clickable
-            />
-          </Box>
-        </Box>
 
-        <List sx={{ p: 0 }}>
-          <AnimatePresence>
+  return (
+    <Box sx={{ width: '100%' }}>
+      {/* Compact Header */}
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        mb: 2,
+        pb: 1,
+        borderBottom: '1px solid',
+        borderColor: colors.neutral[200],
+      }}>
+        <Typography variant="h6" sx={{ fontWeight: 200 }}>
+          Recommendations ({filteredRecommendations.length})
+        </Typography>
+        
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Chip
+            label="All"
+            size="small"
+            variant={filter === 'all' ? 'filled' : 'outlined'}
+            onClick={() => setFilter('all')}
+            clickable
+            sx={{ backgroundColor: filter === 'all' ? colors.neutral[200] : 'transparent', borderRadius: 2  }}
+          />
+          <Chip
+            label={`Actions (${actionRequiredCount})`}
+            size="small"
+            variant={filter === 'action-required' ? 'filled' : 'outlined'}
+            onClick={() => setFilter(filter === 'action-required' ? 'all' : 'action-required')}
+            clickable
+            sx={{ backgroundColor: filter === 'action-required' ? colors.neutral[200] : 'transparent', borderRadius: 2  }}
+          />
+          <Chip
+            label={`Critical (${criticalCount})`}
+            size="small"
+            variant={filter === 'critical' ? 'filled' : 'outlined'}
+            onClick={() => setFilter(filter === 'critical' ? 'all' : 'critical')}
+            clickable
+            sx={{ backgroundColor: filter === 'critical' ? colors.neutral[200] : 'transparent', borderRadius: 2  }}
+          />
+        </Box>
+      </Box>
+
+      {/* Recommendations List */}
+      <Box>
+        {filteredRecommendations.length > 0 ? (
+          <Box>
             {filteredRecommendations.map((recommendation, index) => (
               <RecommendationItem
                 key={recommendation.id}
@@ -343,24 +317,40 @@ const RecommendationsPanel: React.FC = () => {
                 index={index}
               />
             ))}
-          </AnimatePresence>
-        </List>
-
-        {filteredRecommendations.length === 0 && (
-          <Box
-            sx={{
-              textAlign: 'center',
-              py: 4,
-              color: 'text.secondary',
-            }}
-          >
-            <Typography variant="body2">
-              No recommendations match the current filter
-            </Typography>
           </Box>
-        )}
-      </CardContent>
-    </Card>
+        ) : (
+          <Box>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 6,
+                  textAlign: 'center',
+                  borderRadius: 1,
+                  backgroundColor: colors.neutral[25],
+                  border: '1px solid',
+                  borderColor: colors.neutral[200],
+                }}
+              >
+                <CheckIcon 
+                  sx={{ 
+                    fontSize: 64, 
+                    color: colors.neutral[500],
+                    mb: 2,
+                    opacity: 0.7,
+                  }} 
+                />
+                <Typography variant="h6" sx={{ fontWeight: 200, mb: 1 }}>
+                  All Clear!
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  No recommendations match the current filter. 
+                  {filter !== 'all' && ' Try selecting "All Recommendations" to see more.'}
+                </Typography>
+              </Paper>
+            </Box>
+          )}
+      </Box>
+    </Box>
   );
 };
 

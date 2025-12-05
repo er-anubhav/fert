@@ -8,7 +8,6 @@ import ProbeManagement from './pages/ProbeManagement/ProbeManagement';
 import ProbeDetail from './pages/ProbeDetail/ProbeDetail';
 import SprinklerControl from './pages/SprinklerControl/SprinklerControl';
 import SecurityCamera from './pages/SecurityCamera/SecurityCamera';
-import BluetoothSetup from './pages/BluetoothSetup/BluetoothSetup';
 import Profile from './pages/Profile/Profile';
 
 function App() {
@@ -43,8 +42,6 @@ function App() {
           {/* Security & Camera */}
           <Route path="/security" element={<SecurityCamera />} />
           
-          {/* Bluetooth Device Setup */}
-          <Route path="/bluetooth" element={<BluetoothSetup />} />
           
           {/* User Profile */}
           <Route path="/profile" element={<Profile />} />

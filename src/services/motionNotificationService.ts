@@ -28,6 +28,17 @@ export class MotionNotificationService {
       
       if (result.ok) {
         console.log('Motion alert sent successfully:', result.message);
+        
+        // Dispatch custom event for real-time UI updates
+        const motionEvent = new CustomEvent('motionDetected', {
+          detail: {
+            deviceId: deviceId || 'cam-001',
+            location: location || 'newgen iedc field area',
+            timestamp: new Date().toISOString()
+          }
+        });
+        window.dispatchEvent(motionEvent);
+        
         return true;
       } else {
         console.error('Failed to send motion alert:', result.error);

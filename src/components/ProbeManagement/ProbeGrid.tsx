@@ -103,22 +103,23 @@ const ProbeCard: React.FC<ProbeCardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.1 }}
-      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      style={{ width: '100%' }}
     >
       <Card
         sx={{
-          height: '100%',
+          width: '100%',
           cursor: 'pointer',
           position: 'relative',
           border: '1px solid',
-          borderColor: probe.status === 'online' ? colors.status.success + '40' :
-                      probe.status === 'offline' ? colors.status.error + '40' :
-                      colors.status.warning + '40',
+          borderColor: colors.neutral[200],
+          borderRadius: 1,
           '&:hover': {
-            boxShadow: theme.shadows[4],
+            borderColor: colors.neutral[300],
+            backgroundColor: colors.neutral[25],
           },
         }}
         onClick={() => onProbeClick(probe)}
+        elevation={0}
       >
         {/* Status indicator */}
         <Box
@@ -134,219 +135,183 @@ const ProbeCard: React.FC<ProbeCardProps> = ({
           }}
         />
 
-        <CardContent sx={{ p: 3 }}>
-          {/* Header */}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
-            <Box sx={{ flex: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <Box
-                  sx={{
-                    width: 40,
-                    height: 40,
-                    borderRadius: 2,
-                    backgroundColor: `${getStatusColor(probe.status === 'maintenance' ? 'warning' : probe.status)}20`,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {probe.isBluetoothConnected ? (
-                    <Badge
-                      badgeContent={<BluetoothIcon sx={{ fontSize: 8 }} />}
-                      color="primary"
-                      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                      <SensorIcon sx={{ fontSize: 20, color: getStatusColor(probe.status === 'maintenance' ? 'warning' : probe.status) }} />
-                    </Badge>
-                  ) : (
-                    <SensorIcon sx={{ fontSize: 20, color: getStatusColor(probe.status === 'maintenance' ? 'warning' : probe.status) }} />
-                  )}
-                </Box>
+        <CardContent sx={{ p: 4, width: '100%' }}>
+          {/* Horizontal Layout for Full Width */}
+          <Box sx={{ display: 'flex', gap: 4, alignItems: 'flex-start', width: '100%' }}>
+            
+            {/* Left Section: Basic Info */}
+            <Box sx={{ minWidth: '200px' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                <SensorIcon sx={{ fontSize: 24, color: colors.neutral[600] }} />
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 500, fontSize: '1.125rem', lineHeight: 1.5 }}>
                     {probe.name}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    {probe.uuid}
+                  <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                    {probe.location.fieldName}
                   </Typography>
                 </Box>
               </Box>
-
-              {/* Group chip */}
-              {groupInfo && (
+              
+              {/* Status and Last Active */}
+              <Box sx={{ mb: 2 }}>
                 <Chip
-                  label={groupInfo.name}
-                  size="small"
+                  label="OFFLINE"
                   sx={{
-                    backgroundColor: `${groupInfo.color}20`,
-                    color: groupInfo.color,
-                    fontWeight: 500,
-                    mb: 1,
+                    fontSize: '0.75rem',
+                    backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                    color: 'rgba(255, 152, 0, 0.9)',
+                    borderRadius: 1,
+                    mb: 1
+                  }}
+                  size="small"
+                />
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>
+                  Disconnected 2 days ago
+                </Typography>
+              </Box>
+              
+              <Tooltip title="Refresh Data">
+                <IconButton
+                  size="small"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRefreshProbe(probe.id);
+                  }}
+                  sx={{ 
+                    borderColor: colors.neutral[300],
+                    color: colors.neutral[700],
+                    '&:hover': {
+                      backgroundColor: colors.neutral[100]
+                    }
+                  }}
+                >
+                  <RefreshIcon sx={{ fontSize: 18 }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+
+            {/* Middle Section: Sensor Readings */}
+            <Box sx={{ flex: 1, minWidth: '300px' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2, fontSize: '1rem', lineHeight: 1.5 }}>
+                Last Readings (2 days ago)
+              </Typography>
+              <Grid container spacing={2}>
+                <Grid item xs={6} sm={3}>
+                  <Card elevation={0} sx={{ p: 2, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
+                      Moisture
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontSize: '1rem', lineHeight: 1.5, fontWeight: 500, color: colors.neutral[700] }}>
+                      {probe.currentReading.soilMoisture}%
+                    </Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <Card elevation={0} sx={{ p: 2, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
+                      Temperature
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontSize: '1rem', lineHeight: 1.5, fontWeight: 500, color: colors.neutral[700] }}>
+                      {probe.currentReading.temperature.toFixed(1)}°C
+                    </Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <Card elevation={0} sx={{ p: 2, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
+                      pH Level
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontSize: '1rem', lineHeight: 1.5, fontWeight: 500, color: colors.neutral[700] }}>
+                      {probe.currentReading.pH}
+                    </Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs={6} sm={3}>
+                  <Card elevation={0} sx={{ p: 2, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
+                      Nitrogen
+                    </Typography>
+                    <Typography variant="h6" sx={{ fontSize: '1rem', lineHeight: 1.5, fontWeight: 500, color: colors.neutral[700] }}>
+                      {probe.currentReading.nitrogen}%
+                    </Typography>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Box>
+
+            {/* Right Section: System Status */}
+            <Box sx={{ minWidth: '250px' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 500, mb: 2, fontSize: '1rem', lineHeight: 1.5 }}>
+                System Status
+              </Typography>
+              
+              {/* Battery */}
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>Battery</Typography>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5, fontWeight: 500 }}>
+                    {probe.batteryLevel}%
+                  </Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={probe.batteryLevel}
+                  sx={{
+                    height: 6,
+                    borderRadius: 1,
+                    backgroundColor: colors.neutral[200],
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: colors.neutral[600],
+                    },
                   }}
                 />
-              )}
-            </Box>
+              </Box>
 
-            <Tooltip title="Refresh Data">
-              <IconButton
-                size="small"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRefreshProbe(probe.id);
-                }}
-              >
-                <RefreshIcon sx={{ fontSize: 18 }} />
-              </IconButton>
-            </Tooltip>
-          </Box>
-
-          {/* Status */}
-          <Box sx={{ mb: 2 }}>
-            <Chip
-              label={probe.status.toUpperCase()}
-              color={probe.status === 'online' ? 'success' : 
-                    probe.status === 'offline' ? 'error' : 'warning'}
-              size="small"
-              sx={{ fontWeight: 600 }}
-            />
-          </Box>
-
-          {/* Location and Last Active */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <LocationIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-            <Typography variant="body2" color="text.secondary">
-              {probe.location.fieldName}
-            </Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-            <TimeIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-            <Typography variant="body2" color="text.secondary">
-              {getLastActiveText(probe.lastActive)}
-            </Typography>
-          </Box>
-
-          {/* Sensor readings preview */}
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-              Current Readings
-            </Typography>
-            <Grid container spacing={1}>
-              <Grid item xs={6}>
-                <Box sx={{ textAlign: 'center', p: 1, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
-                    Moisture
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: colors.sensor.moisture }}>
-                    {probe.currentReading.soilMoisture.toFixed(0)}%
+              {/* WiFi */}
+              <Box sx={{ mb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>WiFi Signal</Typography>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5, fontWeight: 500 }}>
+                    {probe.wifiStrength}%
                   </Typography>
                 </Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box sx={{ textAlign: 'center', p: 1, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
-                    Temp
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: colors.sensor.temperature }}>
-                    {probe.currentReading.temperature.toFixed(1)}°C
+                <LinearProgress
+                  variant="determinate"
+                  value={probe.wifiStrength}
+                  sx={{
+                    height: 6,
+                    borderRadius: 1,
+                    backgroundColor: colors.neutral[200],
+                    '& .MuiLinearProgress-bar': {
+                      backgroundColor: colors.neutral[600],
+                    },
+                  }}
+                />
+              </Box>
+
+              {/* Water Tank */}
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5 }}>Water Tank</Typography>
+                  <Typography variant="body2" sx={{ fontSize: '0.875rem', lineHeight: 1.5, fontWeight: 500 }}>
+                    {probe.waterTankLevel}%
                   </Typography>
                 </Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box sx={{ textAlign: 'center', p: 1, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
-                    pH
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: colors.sensor.pH }}>
-                    {probe.currentReading.pH.toFixed(1)}
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={6}>
-                <Box sx={{ textAlign: 'center', p: 1, backgroundColor: colors.neutral[50], borderRadius: 1 }}>
-                  <Typography variant="caption" color="text.secondary">
-                    N-P-K
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: colors.sensor.nitrogen }}>
-                    {probe.currentReading.nitrogen.toFixed(0)}-{probe.currentReading.phosphorus.toFixed(0)}-{probe.currentReading.potassium.toFixed(0)}
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
-          </Box>
-
-          {/* System Status */}
-          <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 1 }}>
-              System Status
-            </Typography>
-            
-            {/* Battery */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-              <BatteryIcon sx={{ fontSize: 18, color: getBatteryColor(probe.batteryLevel) }} />
-              <LinearProgress
-                variant="determinate"
-                value={probe.batteryLevel}
-                sx={{
-                  flex: 1,
-                  height: 6,
-                  borderRadius: 3,
-                  backgroundColor: colors.neutral[200],
-                  '& .MuiLinearProgress-bar': {
-                    backgroundColor: getBatteryColor(probe.batteryLevel),
-                  },
-                }}
-              />
-              <Typography variant="caption" sx={{ fontWeight: 500, minWidth: 35 }}>
-                {probe.batteryLevel}%
-              </Typography>
-            </Box>
-
-            {/* WiFi */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-              <WifiIcon sx={{ fontSize: 18, color: getWifiColor(probe.wifiStrength) }} />
-              <LinearProgress
-                variant="determinate"
-                value={probe.wifiStrength}
-                sx={{
-                  flex: 1,
-                  height: 6,
-                  borderRadius: 3,
-                  backgroundColor: colors.neutral[200],
-                  '& .MuiLinearProgress-bar': {
-                    backgroundColor: getWifiColor(probe.wifiStrength),
-                  },
-                }}
-              />
-              <Typography variant="caption" sx={{ fontWeight: 500, minWidth: 35 }}>
-                {probe.wifiStrength}%
-              </Typography>
-            </Box>
-
-            {/* Water Tank (if available) */}
-            {probe.waterTankLevel > 0 && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <WaterIcon sx={{ fontSize: 18, color: colors.sensor.moisture }} />
                 <LinearProgress
                   variant="determinate"
                   value={probe.waterTankLevel}
                   sx={{
-                    flex: 1,
                     height: 6,
-                    borderRadius: 3,
+                    borderRadius: 1,
                     backgroundColor: colors.neutral[200],
                     '& .MuiLinearProgress-bar': {
-                      backgroundColor: probe.waterTankLevel < 30 ? colors.status.error :
-                                     probe.waterTankLevel < 60 ? colors.status.warning :
-                                     colors.status.success,
+                      backgroundColor: colors.neutral[600],
                     },
                   }}
                 />
-                <Typography variant="caption" sx={{ fontWeight: 500, minWidth: 35 }}>
-                  {probe.waterTankLevel}%
-                </Typography>
               </Box>
-            )}
+            </Box>
           </Box>
         </CardContent>
       </Card>
@@ -360,10 +325,13 @@ const ProbeGrid: React.FC<ProbeGridProps> = ({
   onProbeClick, 
   onRefreshProbe 
 }) => {
+  // Use full width for single probe, normal grid for multiple probes
+  const gridItemProps = probes.length === 1 ? { xs: 12 } : { xs: 12, sm: 6, lg: 4 };
+  
   return (
     <Grid container spacing={3}>
       {probes.map((probe, index) => (
-        <Grid item xs={12} sm={6} lg={4} key={probe.id}>
+        <Grid item {...gridItemProps} key={probe.id}>
           <ProbeCard
             probe={probe}
             groups={groups}

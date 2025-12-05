@@ -74,7 +74,7 @@ textarea {
   font-size: 16px !important;
 }
 
-/* Smooth transitions for better user experience */
+/* Optimize button rendering without heavy transitions */
 button, .MuiButton-root {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
@@ -172,7 +172,7 @@ h1, h2, h3, h4, h5, h6, .MuiTypography-h1, .MuiTypography-h2, .MuiTypography-h3,
   font-family: "Inter", "Poppins", sans-serif !important;
 }
 
-/* Debug styles for tablet issues */
+/* Tablet-optimized styles for recommendations and cards */
 @media (min-width: 768px) and (max-width: 1024px) {
   body {
     background-color: #fafafa !important;
@@ -194,5 +194,65 @@ h1, h2, h3, h4, h5, h6, .MuiTypography-h1, .MuiTypography-h2, .MuiTypography-h3,
   /* Specific fixes for MUI components */
   .MuiBox-root {
     display: flex !important;
+  }
+  
+  /* Optimized card spacing for tablets */
+  .MuiCard-root {
+    margin-bottom: 16px !important;
+  }
+  
+  /* Better touch targets for tablets */
+  .MuiButton-root {
+    min-height: 48px !important;
+    min-width: 64px !important;
+    padding: 12px 24px !important;
+  }
+  
+  .MuiIconButton-root {
+    min-height: 48px !important;
+    min-width: 48px !important;
+  }
+  
+  /* Improved chip interactions */
+  .MuiChip-root {
+    min-height: 40px !important;
+    padding: 8px 16px !important;
+    font-size: 0.875rem !important;
+  }
+  
+  /* Better spacing for tablet layouts */
+  .MuiCardContent-root {
+    padding: 24px !important;
+  }
+  
+  /* Enhanced typography for tablet readability */
+  .MuiTypography-h5 {
+    font-size: 1.5rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  .MuiTypography-h6 {
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+  }
+  
+  .MuiTypography-body1 {
+    font-size: 1rem !important;
+    line-height: 1.6 !important;
+  }
+}
+
+/* Large tablet and small desktop optimizations */
+@media (min-width: 1025px) and (max-width: 1280px) {
+  /* Ensure proper grid layouts */
+  .MuiGrid-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* Better card layouts for larger tablets */
+  .MuiCard-root {
+    max-width: none;
+    margin-bottom: 20px;
   }
 }
