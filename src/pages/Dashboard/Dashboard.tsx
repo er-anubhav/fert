@@ -35,6 +35,7 @@ import {
   Settings as SettingsIcon,
   Warning as WarningIcon,
   CheckCircle as CheckCircleIcon,
+  Mic as MicIcon,
 } from '@mui/icons-material';
 import PWAInstallButton from '../../components/PWA/PWAInstallButton';
 import SummaryCards from '../../components/Dashboard/SummaryCards';
@@ -185,6 +186,9 @@ const Dashboard: React.FC = () => {
                   <NotificationsIcon />
                 </IconButton>
               </Badge>
+              <IconButton onClick={() => navigate('/voice-chatbot')} aria-label="Voice Chatbot">
+                <MicIcon />
+              </IconButton>
               <IconButton onClick={() => window.location.reload()}>
                 <RefreshIcon />
               </IconButton>
@@ -333,16 +337,16 @@ const Dashboard: React.FC = () => {
                   </ListItemAvatar>
                   <ListItemText
                     primary={notification.title}
-                    secondary={
-                      <Box>
+                    secondary={(
+                      <>
                         <Typography variant="body2" color="text.secondary">
                           {notification.message}
                         </Typography>
                         <Typography variant="caption" color="text.secondary">
                           {notification.time}
                         </Typography>
-                      </Box>
-                    }
+                      </>
+                    )}
                   />
                 </ListItem>
                 {index < recentNotifications.length - 1 && <Divider />}

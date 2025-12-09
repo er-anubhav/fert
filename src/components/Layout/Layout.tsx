@@ -14,6 +14,7 @@ import {
   Security as SecurityIcon,
   Bluetooth as BluetoothIcon,
   Person as ProfileIcon,
+  Mic as MicIcon,
 } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -27,6 +28,12 @@ const navigationItems = [
     label: 'Dashboard',
     icon: DashboardIcon,
     path: '/dashboard',
+  },
+  {
+    id: 'voice-chatbot',
+    label: 'Assistant',
+    icon: MicIcon,
+    path: '/voice-chatbot',
   },
   {
     id: 'probes',
@@ -57,7 +64,7 @@ const navigationItems = [
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [bottomNavValue, setBottomNavValue] = useState(0);
-  
+
   const theme = useTheme();
   const location = useLocation();
   const navigate = useNavigate();
@@ -76,9 +83,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
       minHeight: '100vh',
       position: 'relative',
       overflow: 'hidden',

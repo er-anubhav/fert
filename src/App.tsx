@@ -10,6 +10,7 @@ import ProbeDetail from './pages/ProbeDetail/ProbeDetail';
 import SprinklerControl from './pages/SprinklerControl/SprinklerControl';
 import SecurityCamera from './pages/SecurityCamera/SecurityCamera';
 import Profile from './pages/Profile/Profile';
+import VoiceChatbot from './pages/VoiceChatbot/VoiceChatbot';
 
 function App() {
   const [updateAvailable, setUpdateAvailable] = useState(false);
@@ -103,21 +104,17 @@ function App() {
         <Routes>
           {/* Main Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
-          
           {/* Probe Management */}
           <Route path="/probes" element={<ProbeManagement />} />
           <Route path="/probes/:probeId" element={<ProbeDetail />} />
-          
           {/* Irrigation & Sprinkler Control */}
           <Route path="/irrigation" element={<SprinklerControl />} />
-          
           {/* Security & Camera */}
           <Route path="/security" element={<SecurityCamera />} />
-          
-          
+          {/* Voice Chatbot */}
+          <Route path="/voice-chatbot" element={<VoiceChatbot />} />
           {/* User Profile */}
           <Route path="/profile" element={<Profile />} />
-          
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
