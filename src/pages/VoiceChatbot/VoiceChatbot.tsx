@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ElevenLabsService } from '../../services/elevenLabsService';
 
 // Hardcoded for now based on user input
-const AGENT_ID = 'agent_7001kc0a29bnf8tae1c5447028xy';
+const AGENT_ID = 'agent_8401kc0pqhv4fmnr13frj0r4erer';
 
 const VoiceChatbot: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
